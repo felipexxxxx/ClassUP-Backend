@@ -58,10 +58,9 @@ public class UserService {
         String token = tokenService.generateToken(novoUsuario);
     
         // Define a role do usuário em formato legível
-        String roleFormatada = novoUsuario.getRole().name().equals("PROFESSOR") ? "Professor" : "Aluno";
     
         // Retorna um DTO contendo a mensagem de sucesso, o token gerado e a role formatada
-        return new LoginResponseDTO(roleFormatada + " criado com sucesso!", token, roleFormatada);
+        return new LoginResponseDTO(" criado com sucesso!", token);
     }
 
     /**
@@ -79,6 +78,6 @@ public class UserService {
         UserSession session = new UserSession(user, token);
         sessionRepository.save(session);
 
-        return new LoginResponseDTO("Login realizado com sucesso!", token, user.getRole().name());
+        return new LoginResponseDTO("Login realizado com sucesso!", token);
     }
 }
