@@ -1,4 +1,4 @@
-package com.agendaedu.educional;
+package com.agendaedu.educacional;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
