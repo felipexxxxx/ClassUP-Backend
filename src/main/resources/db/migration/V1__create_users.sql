@@ -10,6 +10,6 @@ CREATE TABLE users (
 
     sala_id BIGINT, -- Apenas alunos terão valor aqui (1 aluno por sala)
     -- Sem FK para evitar problema de referência circular com salas
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modificado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

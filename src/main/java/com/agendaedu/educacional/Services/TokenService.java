@@ -4,7 +4,6 @@ import com.agendaedu.educacional.Entities.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import io.github.cdimascio.dotenv.Dotenv;
-import jakarta.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
 
