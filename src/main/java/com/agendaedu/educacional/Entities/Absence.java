@@ -3,6 +3,8 @@ package com.agendaedu.educacional.Entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "absence", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"usuario_id", "atividade_id"})

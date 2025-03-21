@@ -43,6 +43,6 @@ public class User {
     // Relacionamento com sala (aluno participa de uma sala)
     @ManyToOne
     @JoinColumn(name = "sala_id")
-    private Class sala; }
+    private ClassEntity sala; }
 
 

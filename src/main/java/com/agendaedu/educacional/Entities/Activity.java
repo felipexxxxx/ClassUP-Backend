@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "activities")
 @Data
@@ -27,5 +29,5 @@ public class Activity {
 
     @ManyToOne
     @JoinColumn(name = "sala_id", nullable = false)
-    private Class sala;
+    private ClassEntity sala;
     }
