@@ -5,6 +5,7 @@ import com.agendaedu.educacional.Repositories.SessionRepository;
 import com.agendaedu.educacional.Services.UserService;
 import com.agendaedu.educacional.DTOs.LoginRequestDTO;
 import com.agendaedu.educacional.DTOs.LoginResponseDTO;
+import com.agendaedu.educacional.DTOs.NewUserDTO;
 import com.agendaedu.educacional.Exceptions.UserNotFoundException;
 
 import org.springframework.http.*;
@@ -26,9 +27,9 @@ public class UserController {
 
        // ✅ Criar novo usuário com feedback de sucesso
        @PostMapping
-    public ResponseEntity<LoginResponseDTO> registrar(@RequestBody User user) {
-    LoginResponseDTO response = userService.registrar(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        public ResponseEntity<NewUserDTO> registrar(@RequestBody User user) {
+            NewUserDTO response = userService.registrar(user);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
 }
    
        // ✅ Login (Corrigido)

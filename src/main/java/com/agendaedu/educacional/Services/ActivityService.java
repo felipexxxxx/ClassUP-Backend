@@ -17,7 +17,7 @@ public class ActivityService {
     private final ActivityRepository activityRepository;
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
-    // private final EmailSender emailSender; // descomente quando configurar
+    private final EmailService emailService; 
 
     @Transactional
     public Activity createActivity(Activity activity) {
@@ -36,8 +36,8 @@ public class ActivityService {
 
             notificationRepository.save(notification);
 
-            // Enviar e-mail (ativar quando tiver o EmailSender)
-            /*
+         
+            
             String emailBody = """
                 Olá %s,
 
@@ -52,10 +52,10 @@ public class ActivityService {
 
                 Abraço,
                 Agenda Edu
-                """.formatted(aluno.getNome(), activity.getTitulo(), activity.getDescricao(), activity.getLocal(), activity.getDataHora());
+                """.formatted(aluno.getNomeCompleto(), activity.getTitulo(), activity.getDescricao(), activity.getLocal(), activity.getDataHora());
 
-            emailSender.sendEmail(aluno.getEmail(), "Nova Atividade: " + activity.getTitulo(), emailBody);
-            */
+            emailService.sendEmail(aluno.getEmail(), "Nova Atividade: " + activity.getTitulo(), emailBody);
+            
         }
 
         return savedActivity;
@@ -72,7 +72,7 @@ public class ActivityService {
     public Activity getById(Long id) {
         return activityRepository.findById(id).orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
     }
-    
+
     public List<Activity> getAll() {
         return activityRepository.findAll();
     }
