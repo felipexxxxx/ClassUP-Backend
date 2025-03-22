@@ -28,7 +28,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     String token = recoverToken(request);
 
     if (token != null) {
-        User user = tokenService.validateTokenAndGetUser(token); // <-- usa o novo método
+        User user = tokenService.validateTokenAndGetUser(token); 
 
         if (user != null) {
             var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
