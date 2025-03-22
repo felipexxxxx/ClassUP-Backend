@@ -30,25 +30,37 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .cors(Customizer.withDefaults())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(HttpMethod.POST, "/user/login").permitAll()
-                .requestMatchers(HttpMethod.POST, "/user").permitAll()
-                .requestMatchers(HttpMethod.POST, "/class").hasRole("PROFESSOR")
-                .requestMatchers("/class/**").authenticated()
-                .requestMatchers(HttpMethod.POST, "/activities").hasRole("PROFESSOR")
-                .requestMatchers("/activities/**").authenticated()
-                .requestMatchers("/absences/**").authenticated()
-                .requestMatchers("/notifications/**").authenticated()
-                .anyRequest().authenticated()
-            )
-            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+    http
+        .csrf(csrf -> csrf.disable())
+        .cors(Customizer.withDefaults())
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(authorize -> authorize
+            // Acesso público
+            .requestMatchers(HttpMethod.POST, "/user").permitAll()
+            .requestMatchers(HttpMethod.POST, "/user/login").permitAll()
 
-        return http.build();
-    }
+            // Outros endpoints do usuário
+            .requestMatchers("/user/**").authenticated()
+
+            // Notificações (apenas autenticados)
+            .requestMatchers("/notificacao/**").authenticated()
+
+            // Sala: professores criam, alunos e professores acessam
+            .requestMatchers(HttpMethod.POST, "/sala").hasRole("PROFESSOR")
+            .requestMatchers(HttpMethod.POST, "/sala/atividades").hasRole("PROFESSOR")
+            .requestMatchers(HttpMethod.GET, "/sala/atividades/sala/**").hasRole("PROFESSOR")
+            
+            // Tudo dentro de /sala é protegido por token
+            .requestMatchers("/sala/**").authenticated()
+
+            // Qualquer outra requisição também exige autenticação
+            .anyRequest().authenticated()
+        )
+        .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+
+    return http.build();
+}
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
