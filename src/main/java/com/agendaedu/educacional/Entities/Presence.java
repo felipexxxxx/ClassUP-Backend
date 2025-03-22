@@ -6,20 +6,21 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
-@Table(name = "absence", uniqueConstraints = {
+@Table(name = "presence", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"usuario_id", "atividade_id"})
 })
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Absence {
+public class Presence {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private boolean presente;
+    @Enumerated(EnumType.STRING)
+    private PresenceStatus status;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
