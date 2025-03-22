@@ -72,4 +72,9 @@ public class ActivityService {
     public Activity getById(Long id) {
         return activityRepository.findById(id).orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
     }
+    
+    public List<Activity> getAll() {
+        return activityRepository.findAll();
+    }
+    
 }
