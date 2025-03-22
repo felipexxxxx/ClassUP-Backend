@@ -1,5 +1,7 @@
 package com.agendaedu.educacional.Services;
 
+import com.agendaedu.educacional.DTOs.ActivityDTO;
+import com.agendaedu.educacional.DTOs.StudentActivityDTO;
 import com.agendaedu.educacional.Entities.*;
 import com.agendaedu.educacional.Repositories.ActivityRepository;
 import com.agendaedu.educacional.Repositories.NotificationRepository;
@@ -7,6 +9,11 @@ import com.agendaedu.educacional.Repositories.UserRepository;
 import com.agendaedu.educacional.Repositories.PresenceRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import java.util.Collections;   
+import org.springframework.security.core.Authentication;
+
+
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -74,16 +81,51 @@ public class ActivityService {
         return activityRepository.findAll();
     }
 
-    public List<Activity> getActivitiesBySala(Long salaId) {
-        return activityRepository.findBySalaId(salaId);
-    }
+    public List<ActivityDTO> getActivitiesBySala(Long salaId) {
+        List<Activity> atividades = activityRepository.findBySalaId(salaId);
+        return atividades.stream().map(a -> new ActivityDTO(
+                a.getId(),
+                a.getTitulo(),
+                a.getDescricao(),
+                a.getLocal(),
+                a.getDataHora()
+    )).toList();
+}
+
 
     public Activity getById(Long id) {
         return activityRepository.findById(id).orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
     }
 
-    public List<Activity> getAll() {
-        return activityRepository.findAll();
-    }
     
+    public List<StudentActivityDTO> listarAtividadesDoAluno() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User aluno = (User) auth.getPrincipal();
+    
+        if (!aluno.getRole().equals(Role.ALUNO)) {
+            throw new RuntimeException("Apenas alunos podem acessar suas atividades.");
+        }
+    
+        ClassEntity sala = aluno.getSala();
+        if (sala == null) {
+            return Collections.emptyList(); // Aluno ainda não está em uma sala
+        }
+    
+        List<Activity> atividades = activityRepository.findBySalaId(sala.getId());
+    
+        return atividades.stream()
+            .map(atividade -> {
+                Presence presence = presenceRepository.findByUsuarioAndAtividade(aluno, atividade).orElse(null);
+                PresenceStatus status = (presence != null) ? presence.getStatus() : PresenceStatus.PENDENTE;
+    
+                return new StudentActivityDTO(
+                    atividade.getId(),
+                    atividade.getTitulo(),
+                    atividade.getDescricao(),
+                    atividade.getDataHora(), // Certifique-se que é LocalDate
+                    status
+                );
+            })
+            .toList();
+    }
 }
