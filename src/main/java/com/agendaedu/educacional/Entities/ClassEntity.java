@@ -25,7 +25,7 @@ public class ClassEntity {
 
     // Um professor pode ter várias salas (1:N)
     @ManyToOne
-    @JoinColumn(name = "professor_id", nullable = false)
+    @JoinColumn(name = "professor_id")
     private User professor;
 
     // Opcional: se quiser carregar alunos via relacionamento reverso
