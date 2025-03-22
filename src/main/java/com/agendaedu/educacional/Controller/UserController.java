@@ -39,7 +39,7 @@ public class UserController {
        }
    
        // ✅ Atualiza atividade da sessão (usado pelo frontend)
-       @PostMapping("/heartbeat")
+       @PostMapping("/ping")
        public ResponseEntity<Void> heartbeat(@RequestHeader("Authorization") String token) {
            token = token.replace("Bearer ", "");
            var session = sessionRepository.findByToken(token)
