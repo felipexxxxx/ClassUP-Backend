@@ -1,0 +1,9 @@
+CREATE TABLE historic_classes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id BIGINT NOT NULL,
+    sala_id BIGINT NOT NULL,
+    role ENUM('ALUNO', 'PROFESSOR') NOT NULL,
+    data_encerramento TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (sala_id) REFERENCES classes(id) ON DELETE CASCADE
+);

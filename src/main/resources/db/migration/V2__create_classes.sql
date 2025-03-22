@@ -3,7 +3,7 @@ CREATE TABLE classes (
     nome VARCHAR(255) NOT NULL,
     codigo_acesso VARCHAR(20) UNIQUE NOT NULL,
 
-    professor_id BIGINT NOT NULL,
+    professor_id BIGINT,
     FOREIGN KEY (professor_id) REFERENCES users(id),
 
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
