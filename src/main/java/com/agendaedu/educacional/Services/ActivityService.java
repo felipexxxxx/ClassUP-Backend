@@ -4,6 +4,7 @@ import com.agendaedu.educacional.Entities.*;
 import com.agendaedu.educacional.Repositories.ActivityRepository;
 import com.agendaedu.educacional.Repositories.NotificationRepository;
 import com.agendaedu.educacional.Repositories.UserRepository;
+import com.agendaedu.educacional.Repositories.PresenceRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.List;
 public class ActivityService {
 
     private final ActivityRepository activityRepository;
+    private final PresenceRepository presenceRepository;
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
     private final EmailService emailService; 
@@ -23,43 +25,50 @@ public class ActivityService {
     public Activity createActivity(Activity activity) {
         Activity savedActivity = activityRepository.save(activity);
 
-        // Pega todos os alunos da sala
+    // Pega todos os alunos da sala
         List<User> alunos = userRepository.findBySalaAndRole(activity.getSala(), Role.ALUNO);
 
-        for (User aluno : alunos) {
-            Notification notification = Notification.builder()
-                    .atividade(savedActivity)
-                    .usuario(aluno)
-                    .mensagem("Nova atividade: " + savedActivity.getTitulo())
-                    .dataEnvio(savedActivity.getDataHora())
-                    .build();
+    for (User aluno : alunos) {
+        // Cria a notificação
+        Notification notification = Notification.builder()
+                .atividade(savedActivity)
+                .usuario(aluno)
+                .mensagem("Nova atividade: " + savedActivity.getTitulo())
+                .dataEnvio(savedActivity.getDataHora())
+                .build();
+        notificationRepository.save(notification);
 
-            notificationRepository.save(notification);
+        // Cria presença com status PENDENTE
+        Presence presence = Presence.builder()
+                .atividade(savedActivity)
+                .usuario(aluno)
+                .status(PresenceStatus.PENDENTE)
+                .build();
+        presenceRepository.save(presence);
 
-         
-            
-            String emailBody = """
-                Olá %s,
+        // Envia e-mail (opcional)
+        String emailBody = """
+            Olá %s,
 
-                Uma nova atividade foi criada:
+            Uma nova atividade foi criada:
 
-                Título: %s
-                Descrição: %s
-                Local: %s
-                Data e Hora: %s
+            Título: %s
+            Descrição: %s
+            Local: %s
+            Data e Hora: %s
 
-                Fique atento! Você pode confirmar ou cancelar sua presença no portal.
+            Confirme sua presença no portal.
 
-                Abraço,
-                Agenda Edu
-                """.formatted(aluno.getNomeCompleto(), activity.getTitulo(), activity.getDescricao(), activity.getLocal(), activity.getDataHora());
+            Abraço,
+            Agenda Edu
+            """.formatted(aluno.getNomeCompleto(), activity.getTitulo(), activity.getDescricao(), activity.getLocal(), activity.getDataHora());
 
-            emailService.sendEmail(aluno.getEmail(), "Nova Atividade: " + activity.getTitulo(), emailBody);
-            
-        }
-
-        return savedActivity;
+        emailService.sendEmail(aluno.getEmail(), "Nova Atividade: " + activity.getTitulo(), emailBody);
     }
+
+    return savedActivity;
+}
+
 
     public List<Activity> getAllActivities() {
         return activityRepository.findAll();
