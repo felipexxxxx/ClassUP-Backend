@@ -29,7 +29,7 @@ public class ClassService {
     if (!user.getRole().equals(Role.PROFESSOR)) {
         throw new RuntimeException("Apenas professores podem criar salas.");
     }
-    
+
     boolean salaExiste = classRepository.existsByNomeAndProfessor(classEntity.getNome(), user);
     if (salaExiste) {
         throw new RuntimeException("Você já criou uma sala com esse nome.");
@@ -42,12 +42,21 @@ public class ClassService {
 }
 
     @Transactional
-    public String joinClass(Long userId, String codigoDeEntrada) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    public String joinClass(String codigoDeEntrada) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
 
         ClassEntity classEntity = classRepository.findByCodigoAcesso(codigoDeEntrada)
                 .orElseThrow(() -> new RuntimeException("Código de sala inválido"));
+
+        if (user.getSala() != null && user.getSala().getId().equals(classEntity.getId())) {
+        throw new RuntimeException("Você já está nessa sala.");
+        }
+
+        if (user.getSala() != null) {
+        throw new RuntimeException("Você já está em uma sala. Só é permitido ingressar em uma.");
+        }
 
         user.setSala(classEntity);
         userRepository.save(user);

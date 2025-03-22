@@ -1,8 +1,8 @@
 package com.agendaedu.educacional.Controller;
 
+import com.agendaedu.educacional.DTOs.JoinClassDTO;
 import com.agendaedu.educacional.Entities.ClassEntity;
 import com.agendaedu.educacional.Services.ClassService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +21,8 @@ public class ClassController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<?> joinClass(@RequestParam Long userId, @RequestParam String codigoDeEntrada) {
-        try {
-            String result = classService.joinClass(userId, codigoDeEntrada);
-            return ResponseEntity.ok(result);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(400).body(e.getMessage());
-        }
-    }
+    public ResponseEntity<String> joinClass(@RequestBody JoinClassDTO dto) {
+        String result = classService.joinClass(dto.codigoDeEntrada());
+        return ResponseEntity.ok(result);
+}
 }
