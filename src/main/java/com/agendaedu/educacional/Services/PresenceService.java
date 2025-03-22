@@ -6,8 +6,10 @@ import com.agendaedu.educacional.Entities.PresenceStatus;
 import com.agendaedu.educacional.Entities.User;
 import com.agendaedu.educacional.Repositories.PresenceRepository;
 import com.agendaedu.educacional.Repositories.ActivityRepository;
-import com.agendaedu.educacional.Repositories.UserRepository;
+import org.springframework.security.core.Authentication;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,30 +18,37 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PresenceService {
 
-    private final PresenceRepository absenceRepository;
-    private final UserRepository userRepository;
+    private final PresenceRepository presenceRepository;
     private final ActivityRepository activityRepository;
 
-    public void confirmAttendance(Long userId, Long activityId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
-    
-        Presence absence = absenceRepository.findByUsuarioAndAtividade(user, activity)
-                .orElse(new Presence(null, PresenceStatus.PENDENTE, user, activity));
-    
-        absence.setStatus(PresenceStatus.CONFIRMADO);
-        absenceRepository.save(absence);
-    }
+    @Transactional
+    public void confirmarPresenca(Long atividadeId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
+
+        Activity atividade = activityRepository.findById(atividadeId)
+        .orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
+
+        Presence presence = presenceRepository.findByUsuarioAndAtividade(user, atividade)
+        .orElseThrow(() -> new RuntimeException("Presença não registrada."));
+
+    presence.setStatus(PresenceStatus.CONFIRMADO);
+    presenceRepository.save(presence);
+}
+
 
     @Transactional
-    public void cancelAttendance(Long userId, Long activityId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
+    public void cancelarPresenca(Long atividadeId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
 
-        Presence absence = absenceRepository.findByUsuarioAndAtividade(user, activity)
-            .orElseThrow(() -> new RuntimeException("Presença não registrada."));
+        Activity atividade = activityRepository.findById(atividadeId)
+        .orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
 
-    absence.setStatus(PresenceStatus.RECUSADO);
-    absenceRepository.save(absence);
-    }
+        Presence presence = presenceRepository.findByUsuarioAndAtividade(user, atividade)
+        .orElseThrow(() -> new RuntimeException("Presença não registrada."));
+
+    presence.setStatus(PresenceStatus.RECUSADO);
+    presenceRepository.save(presence);
+}
 }
