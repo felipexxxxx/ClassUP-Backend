@@ -6,12 +6,12 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "historic_classes")
+@Table(name = "classes_history")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class HistoricClasses {
+public class ClassHistoryEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -2,7 +2,7 @@ package com.agendaedu.educacional.Controller;
 
 import com.agendaedu.educacional.DTOs.JoinClassDTO;
 import com.agendaedu.educacional.Entities.ClassEntity;
-import com.agendaedu.educacional.Entities.HistoricClasses;
+import com.agendaedu.educacional.Entities.ClassHistoryEntity;
 import com.agendaedu.educacional.Services.ClassService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +34,8 @@ public class ClassController {
         return ResponseEntity.ok(mensagem);
 }
     @GetMapping("/historico")
-    public ResponseEntity<List<HistoricClasses>> getHistoricoUsuario() {
-        List<HistoricClasses> historico = classService.listarHistoricoUsuario();
+    public ResponseEntity<List<ClassHistoryEntity>> getHistoricoUsuario() {
+        List<ClassHistoryEntity> historico = classService.listarHistoricoUsuario();
         return ResponseEntity.ok(historico);
 }
     @DeleteMapping("/aluno/{alunoId}")

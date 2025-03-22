@@ -1,4 +1,4 @@
-CREATE TABLE historic_classes (
+CREATE TABLE classes_history (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     usuario_id BIGINT NOT NULL,
     sala_id BIGINT NOT NULL,

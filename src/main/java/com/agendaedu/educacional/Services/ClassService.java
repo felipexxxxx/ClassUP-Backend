@@ -2,11 +2,11 @@ package com.agendaedu.educacional.Services;
 
 import com.agendaedu.educacional.Entities.ClassEntity;
 import com.agendaedu.educacional.Entities.Role;
-import com.agendaedu.educacional.Entities.HistoricClasses;
 import com.agendaedu.educacional.Entities.User;
+import com.agendaedu.educacional.Entities.ClassHistoryEntity;
 import com.agendaedu.educacional.Repositories.ClassRepository;
 import com.agendaedu.educacional.Repositories.UserRepository;
-import com.agendaedu.educacional.Repositories.SalaHistoricoRepository;
+import com.agendaedu.educacional.Repositories.ClassHistoryRepository;
 import java.util.List;
 import org.springframework.security.core.Authentication;
 
@@ -24,7 +24,7 @@ public class ClassService {
 
     private final ClassRepository classRepository;
     private final UserRepository userRepository;
-    private final SalaHistoricoRepository salaHistoricoRepository;
+    private final ClassHistoryRepository salaHistoricoRepository;
 
     @Transactional
     public ClassEntity createClass(ClassEntity classEntity) {
@@ -91,7 +91,7 @@ public class ClassService {
 
             // 1. Registra professor no histórico
             if (!salaHistoricoRepository.existsBySalaAndUsuarioAndRole(sala, professor, Role.PROFESSOR)) {
-                salaHistoricoRepository.save(HistoricClasses.builder()
+                salaHistoricoRepository.save(ClassHistoryEntity.builder()
                         .usuario(professor)
                         .sala(sala)
                         .role(Role.PROFESSOR)
@@ -103,7 +103,7 @@ public class ClassService {
             List<User> alunos = userRepository.findBySalaAndRole(sala, Role.ALUNO);
             for (User aluno : alunos) {
                 if (!salaHistoricoRepository.existsBySalaAndUsuarioAndRole(sala, aluno, Role.ALUNO)) {
-                    salaHistoricoRepository.save(HistoricClasses.builder()
+                    salaHistoricoRepository.save(ClassHistoryEntity.builder()
                             .usuario(aluno)
                             .sala(sala)
                             .role(Role.ALUNO)
@@ -129,7 +129,7 @@ public class ClassService {
 
 
 
-    public List<HistoricClasses> listarHistoricoUsuario() {
+    public List<ClassHistoryEntity> listarHistoricoUsuario() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
 
