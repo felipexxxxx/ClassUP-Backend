@@ -1,31 +1,33 @@
 package com.agendaedu.educacional.Services;
 
 import com.agendaedu.educacional.Entities.User;
+import com.agendaedu.educacional.Repositories.UserRepository;
+import java.util.Optional;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import io.github.cdimascio.dotenv.Dotenv;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
 @Service
+@RequiredArgsConstructor
 public class TokenService {
 
-    private static final Dotenv dotenv = Dotenv.load();
+    private final UserRepository userRepository;
 
+    private static final Dotenv dotenv = Dotenv.load();
     private final String SECRET = dotenv.get("API_SECURITY_TOKEN_SECRET");
     private final long ACCESS_TOKEN_EXPIRATION = Long.parseLong(
         dotenv.get("API_SECURITY_ACCESS_TOKEN_EXPIRATION_MS")
     );
 
-    /**
-     * Gera um Access Token com validade de 24h.
-     */
     public String generateToken(User user) {
         return JWT.create()
                 .withIssuer("AgendaEdu")
-                .withSubject(user.getEmail()) // ou .withSubject(user.getMatricula()) se preferir
+                .withSubject(user.getEmail()) // ou matrícula se preferir
+                .withSubject(user.getMatricula())
                 .withClaim("id", user.getId())
                 .withClaim("role", user.getRole().name())
                 .withIssuedAt(new Date())
@@ -33,16 +35,22 @@ public class TokenService {
                 .sign(Algorithm.HMAC256(SECRET));
     }
 
-    /**
-     * Valida o token e retorna o "login" (email ou matrícula).
-     */
-    public String validateToken(String token) {
+    public User validateTokenAndGetUser(String token) {
         try {
-            return JWT.require(Algorithm.HMAC256(SECRET))
+            String login = JWT.require(Algorithm.HMAC256(SECRET))
                     .withIssuer("AgendaEdu")
                     .build()
                     .verify(token)
-                    .getSubject(); // <- login que será usado para recuperar o usuário
+                    .getSubject();
+
+            // Busca por email ou matrícula
+            Optional<User> optionalUser = userRepository.findByEmail(login);
+            if (optionalUser.isEmpty()) {
+                optionalUser = userRepository.findByMatricula(login);
+            }
+
+            return optionalUser.orElse(null);
+
         } catch (Exception e) {
             return null;
         }

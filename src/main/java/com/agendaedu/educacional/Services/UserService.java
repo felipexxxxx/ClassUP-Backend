@@ -71,17 +71,28 @@ public class UserService {
      * Faz login e retorna um token de autenticação.
      */
     public LoginResponseDTO login(LoginRequestDTO dto) {
-        User user = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new UserNotFoundException(dto.getEmail()));
-
+        Optional<User> optionalUser = Optional.empty();
+    
+        if (dto.getEmail() != null && !dto.getEmail().isEmpty()) {
+            optionalUser = userRepository.findByEmail(dto.getEmail());
+        } else if (dto.getMatricula() != null && !dto.getMatricula().isEmpty()) {
+            optionalUser = userRepository.findByMatricula(dto.getMatricula());
+        } else {
+            throw new RuntimeException("Informe o e-mail ou a matrícula para login.");
+        }
+    
+        User user = optionalUser.orElseThrow(() ->
+            new UserNotFoundException(dto.getEmail() != null ? dto.getEmail() : dto.getMatricula())
+        );
+    
         if (!passwordEncoder.matches(dto.getSenha(), user.getSenha())) {
             throw new InvalidCredentialsException();
         }
-
+    
         String token = tokenService.generateToken(user);
         UserSession session = new UserSession(user, token);
         sessionRepository.save(session);
-
+    
         return new LoginResponseDTO("Login realizado com sucesso!", token);
     }
 }

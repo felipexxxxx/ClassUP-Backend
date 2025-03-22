@@ -35,8 +35,14 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(HttpMethod.POST, "/user/login").authenticated()
+                .requestMatchers(HttpMethod.POST, "/user/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/user").permitAll()
+                .requestMatchers(HttpMethod.POST, "/class").hasRole("PROFESSOR")
+                .requestMatchers("/class/**").authenticated()
+                .requestMatchers(HttpMethod.POST, "/activities").hasRole("PROFESSOR")
+                .requestMatchers("/activities/**").authenticated()
+                .requestMatchers("/absences/**").authenticated()
+                .requestMatchers("/notifications/**").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);

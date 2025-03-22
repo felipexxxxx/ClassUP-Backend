@@ -9,5 +9,6 @@ import lombok.Setter;
 
 public class LoginRequestDTO {
     private String email;
+    private String matricula;
     private String senha;
 }

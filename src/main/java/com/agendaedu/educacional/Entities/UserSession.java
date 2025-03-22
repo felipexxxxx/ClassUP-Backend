@@ -19,7 +19,7 @@ public class UserSession {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "usuario_id", nullable = false)
     private User user;
 
     @Column(nullable = false, unique = true, length = 512)
