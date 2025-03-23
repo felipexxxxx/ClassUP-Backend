@@ -1,6 +1,7 @@
 package com.agendaedu.educacional.Controller;
 
 import com.agendaedu.educacional.DTOs.ActivityDTO;
+import com.agendaedu.educacional.DTOs.GetClassDTO;
 import com.agendaedu.educacional.DTOs.JoinClassDTO;
 import com.agendaedu.educacional.Entities.ClassEntity;
 import com.agendaedu.educacional.Entities.ClassHistoryEntity;
@@ -8,6 +9,7 @@ import com.agendaedu.educacional.Services.ClassService;
 import com.agendaedu.educacional.Services.ActivityService;
 import com.agendaedu.educacional.Services.PresenceService;
 import com.agendaedu.educacional.DTOs.StudentActivityDTO;
+import com.agendaedu.educacional.DTOs.StudentClassDTO;
 import com.agendaedu.educacional.Entities.Activity;
 
 import lombok.RequiredArgsConstructor;
@@ -44,10 +46,22 @@ public class ClassController {
         return ResponseEntity.ok(classService.listarHistoricoUsuario());
     }
 
+    @GetMapping("/aluno")
+    public ResponseEntity<StudentClassDTO> getMinhaSala() {
+        return ResponseEntity.ok(classService.getMinhaSalaAtual());
+    }
+
+    @GetMapping("/detalhes")
+    public ResponseEntity<GetClassDTO> getDetalhesSala() {
+        return ResponseEntity.ok(classService.detalharSalaDoAluno());
+    }
+
     @DeleteMapping("/aluno/{alunoId}")
     public ResponseEntity<String> removerAluno(@PathVariable Long alunoId) {
         return ResponseEntity.ok(classService.removerAlunoDaSala(alunoId));
     }
+
+
 
     //  Atividades
     //  Criar atividade (PROFESSOR)
