@@ -3,7 +3,7 @@ package com.agendaedu.educacional.Entities;
 public enum PresenceStatus {
     PENDENTE("Pendente"),
     CONFIRMADO("Confirmado"),
-    RECUSADO("Cancelado");
+    CANCELADO("Cancelado");
 
     private final String descricao;
 

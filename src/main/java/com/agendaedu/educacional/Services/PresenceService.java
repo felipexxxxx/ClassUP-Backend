@@ -48,7 +48,7 @@ public class PresenceService {
         Presence presence = presenceRepository.findByUsuarioAndAtividade(user, atividade)
         .orElseThrow(() -> new RuntimeException("Presença não registrada."));
 
-    presence.setStatus(PresenceStatus.RECUSADO);
+    presence.setStatus(PresenceStatus.CANCELADO);
     presenceRepository.save(presence);
 }
 }

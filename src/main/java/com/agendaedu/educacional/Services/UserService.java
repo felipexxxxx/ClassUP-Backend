@@ -3,12 +3,18 @@ package com.agendaedu.educacional.Services;
 import com.agendaedu.educacional.DTOs.LoginRequestDTO;
 import com.agendaedu.educacional.DTOs.LoginResponseDTO;
 import com.agendaedu.educacional.DTOs.NewUserDTO;
+import com.agendaedu.educacional.DTOs.UpdateEmailDTO;
+import com.agendaedu.educacional.DTOs.UpdatePasswordDTO;
+import com.agendaedu.educacional.DTOs.UserInfoDTO;
 import com.agendaedu.educacional.Entities.User;
 import com.agendaedu.educacional.Entities.UserSession;
 import com.agendaedu.educacional.Exceptions.*;
 import com.agendaedu.educacional.Repositories.UserRepository;
 import com.agendaedu.educacional.Repositories.SessionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -95,4 +101,35 @@ public class UserService {
     
         return new LoginResponseDTO("Login realizado com sucesso!", token);
     }
+
+
+     public UserInfoDTO getPerfil() {
+        User user = getUsuarioLogado();
+        return new UserInfoDTO(user.getNomeCompleto(), user.getEmail(), user.getMatricula());
+    }
+
+    public String atualizarEmail(UpdateEmailDTO dto) {
+        User user = getUsuarioLogado();
+        user.setEmail(dto.novoEmail());
+        userRepository.save(user);
+        return "Email atualizado com sucesso!";
+    }
+
+    public String atualizarSenha(UpdatePasswordDTO dto) {
+        User user = getUsuarioLogado();
+
+        if (!passwordEncoder.matches(dto.senhaAtual(), user.getSenha())) {
+            throw new RuntimeException("Senha atual incorreta.");
+        }
+
+        user.setSenha(passwordEncoder.encode(dto.novaSenha()));
+        userRepository.save(user);
+        return "Senha atualizada com sucesso!";
+    }
+
+        private User getUsuarioLogado() {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            return (User) auth.getPrincipal();
+    }
 }
+

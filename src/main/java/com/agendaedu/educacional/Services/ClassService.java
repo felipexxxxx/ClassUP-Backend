@@ -1,12 +1,17 @@
 package com.agendaedu.educacional.Services;
 
+import com.agendaedu.educacional.Entities.Activity;
 import com.agendaedu.educacional.Entities.ClassEntity;
 import com.agendaedu.educacional.Entities.Role;
 import com.agendaedu.educacional.Entities.User;
 import com.agendaedu.educacional.Entities.ClassHistoryEntity;
+import com.agendaedu.educacional.Entities.Presence;
+import com.agendaedu.educacional.Entities.PresenceStatus;
 import com.agendaedu.educacional.Repositories.ClassRepository;
 import com.agendaedu.educacional.Repositories.UserRepository;
 import com.agendaedu.educacional.Repositories.ClassHistoryRepository;
+import com.agendaedu.educacional.Repositories.PresenceRepository;
+import com.agendaedu.educacional.Repositories.ActivityRepository;
 import com.agendaedu.educacional.DTOs.GetClassDTO;
 import com.agendaedu.educacional.DTOs.SimpleUserDTO;
 import com.agendaedu.educacional.DTOs.StudentClassDTO;
@@ -28,6 +33,8 @@ public class ClassService {
     private final ClassRepository classRepository;
     private final UserRepository userRepository;
     private final ClassHistoryRepository salaHistoricoRepository;
+    private final PresenceRepository presenceRepository;
+    private final ActivityRepository activityRepository;
 
     @Transactional
     public ClassEntity createClass(ClassEntity classEntity) {
@@ -50,27 +57,41 @@ public class ClassService {
 }
 
     @Transactional
-    public String joinClass(String codigoDeEntrada) {
+public String joinClass(String codigoDeEntrada) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    User user = (User) auth.getPrincipal();
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
+    ClassEntity classEntity = classRepository.findByCodigoAcesso(codigoDeEntrada)
+            .orElseThrow(() -> new RuntimeException("Código de sala inválido"));
 
-        ClassEntity classEntity = classRepository.findByCodigoAcesso(codigoDeEntrada)
-                .orElseThrow(() -> new RuntimeException("Código de sala inválido"));
-
-        if (user.getSala() != null && user.getSala().getId().equals(classEntity.getId())) {
+    if (user.getSala() != null && user.getSala().getId().equals(classEntity.getId())) {
         throw new RuntimeException("Você já está nessa sala.");
-        }
-
-        if (user.getSala() != null) {
-        throw new RuntimeException("Você já está em uma sala. Só é permitido ingressar em uma.");
-        }
-
-        user.setSala(classEntity);
-        userRepository.save(user);
-
-        return "Usuário adicionado à sala com sucesso.";
     }
+
+    if (user.getSala() != null) {
+        throw new RuntimeException("Você já está em uma sala. Só é permitido ingressar em uma.");
+    }
+
+    // Associa aluno à sala
+    user.setSala(classEntity);
+    userRepository.save(user);
+
+    List<Activity> atividades = activityRepository.findBySalaId(classEntity.getId());
+        for (Activity atividade : atividades) {
+            boolean jaExiste = presenceRepository.findByUsuarioAndAtividade(user, atividade).isPresent();
+        if (!jaExiste) {
+            Presence novaPresenca = new Presence();
+            novaPresenca.setUsuario(user);
+            novaPresenca.setAtividade(atividade);
+            novaPresenca.setStatus(PresenceStatus.PENDENTE);
+            presenceRepository.save(novaPresenca);
+        }
+    }
+
+
+    return "Usuário adicionado à sala com sucesso.";
+}
+
     @Transactional
     public String encerrarSemestre() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

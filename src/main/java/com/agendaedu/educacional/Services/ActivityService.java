@@ -123,7 +123,8 @@ public class ActivityService {
                     atividade.getTitulo(),
                     atividade.getDescricao(),
                     atividade.getDataHora(), // Certifique-se que é LocalDate
-                    status
+                    status,
+                    atividade.getLocal()
                 );
             })
             .toList();
