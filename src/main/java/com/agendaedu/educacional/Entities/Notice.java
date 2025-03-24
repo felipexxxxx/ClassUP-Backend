@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "notices") // ← garante que o nome da tabela seja "notice"
 @Data
@@ -26,5 +28,6 @@ public class Notice {
 
     @ManyToOne
     @JoinColumn(name = "sala_id") // ← coluna do banco que faz a FK com a sala
+    @JsonIgnore // <-- Adicione isso
     private ClassEntity sala;
 }

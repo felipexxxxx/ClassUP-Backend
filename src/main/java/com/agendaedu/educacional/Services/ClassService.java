@@ -12,7 +12,11 @@ import com.agendaedu.educacional.Repositories.UserRepository;
 import com.agendaedu.educacional.Repositories.ClassHistoryRepository;
 import com.agendaedu.educacional.Repositories.PresenceRepository;
 import com.agendaedu.educacional.Repositories.ActivityRepository;
+import com.agendaedu.educacional.Repositories.NoticeRepository;
+import com.agendaedu.educacional.DTOs.ActivityHistoryDTO;
+import com.agendaedu.educacional.DTOs.ClassHistoryDetalhesDTO;
 import com.agendaedu.educacional.DTOs.GetClassDTO;
+import com.agendaedu.educacional.DTOs.NoticeHistoryDTO;
 import com.agendaedu.educacional.DTOs.SimpleUserDTO;
 import com.agendaedu.educacional.DTOs.StudentClassDTO;
 import java.util.List;
@@ -35,6 +39,7 @@ public class ClassService {
     private final ClassHistoryRepository salaHistoricoRepository;
     private final PresenceRepository presenceRepository;
     private final ActivityRepository activityRepository;
+    private final NoticeRepository noticeRepository;
 
     @Transactional
     public ClassEntity createClass(ClassEntity classEntity) {
@@ -150,6 +155,46 @@ public String joinClass(String codigoDeEntrada) {
     return "Semestre encerrado com sucesso. Todas as salas foram encerradas.";
 }
 
+   public ClassHistoryDetalhesDTO buscarDetalhesHistorico(Long salaId) {
+    ClassEntity sala = classRepository.findById(salaId)
+        .orElseThrow(() -> new RuntimeException("Sala não encontrada"));
+
+    List<ClassHistoryEntity> historico = salaHistoricoRepository.findBySala(sala);
+
+    // Professor
+    User professor = historico.stream()
+        .filter(h -> h.getRole() == Role.PROFESSOR)
+        .map(ClassHistoryEntity::getUsuario)
+        .findFirst()
+        .orElse(null);
+
+    // Alunos
+    List<SimpleUserDTO> alunos = historico.stream()
+        .filter(h -> h.getRole() == Role.ALUNO)
+        .map(h -> new SimpleUserDTO(h.getUsuario().getId(), h.getUsuario().getNomeCompleto()))
+        .toList();
+
+    // Atividades da sala
+    List<ActivityHistoryDTO> atividades = activityRepository.findBySalaId(salaId).stream()
+        .map(a -> new ActivityHistoryDTO(a.getId(), a.getTitulo(), a.getDescricao(), a.getDataHora()))
+        .toList();
+
+    // Avisos da sala
+    List<NoticeHistoryDTO> avisos = noticeRepository.findBySala(sala).stream()
+    .map(n -> new NoticeHistoryDTO(n.getId(), n.getTitulo(), n.getMensagem(), n.getEnviadaEm()))
+    .toList();
+
+
+    return new ClassHistoryDetalhesDTO(
+        sala.getNome(),
+        sala.getCodigoAcesso(),
+        historico.get(0).getDataEncerramento(),
+        new SimpleUserDTO(professor.getId(), professor.getNomeCompleto()),
+        alunos,
+        atividades,
+        avisos
+    );
+}
 
 
 

@@ -80,13 +80,27 @@ public class NoticeService {
 
     public List<Notice> getNoticesByUserClass() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
-
-        ClassEntity classroom = user.getSala();
-        if (classroom == null) {
-            throw new RuntimeException("You are not assigned to any class.");
+        User userAuth = (User) auth.getPrincipal();
+    
+        if (userAuth.getRole().equals(Role.ALUNO)) {
+            User aluno = userRepository.findById(userAuth.getId())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+            ClassEntity sala = aluno.getSala();
+            if (sala == null) {
+                throw new RuntimeException("Você não está vinculado a nenhuma sala.");
+            }
+            return noticeRepository.findBySala(sala);
         }
-
-        return noticeRepository.findBySala(classroom);
+    
+        if (userAuth.getRole().equals(Role.PROFESSOR)) {
+            List<ClassEntity> salas = classRepository.findByProfessor(userAuth);
+            return salas.stream()
+                .flatMap(sala -> noticeRepository.findBySala(sala).stream())
+                .toList();
+        }
+    
+        throw new RuntimeException("Role inválido.");
     }
+    
 }
+    

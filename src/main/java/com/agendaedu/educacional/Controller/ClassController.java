@@ -1,6 +1,7 @@
 package com.agendaedu.educacional.Controller;
 
 import com.agendaedu.educacional.DTOs.ActivityDTO;
+import com.agendaedu.educacional.DTOs.ClassHistoryDetalhesDTO;
 import com.agendaedu.educacional.DTOs.GetClassDTO;
 import com.agendaedu.educacional.DTOs.JoinClassDTO;
 import com.agendaedu.educacional.DTOs.NoticeDTO;
@@ -49,6 +50,13 @@ public class ClassController {
     public ResponseEntity<List<ClassHistoryEntity>> getHistoricoUsuario() {
         return ResponseEntity.ok(classService.listarHistoricoUsuario());
     }
+
+    @GetMapping("/historico/{id}")
+        public ResponseEntity<ClassHistoryDetalhesDTO> verDetalhesHistorico(@PathVariable Long id) {
+    return ResponseEntity.ok(classService.buscarDetalhesHistorico(id));
+    }
+
+
 
     @GetMapping("/aluno")
     public ResponseEntity<StudentClassDTO> getMinhaSala() {
