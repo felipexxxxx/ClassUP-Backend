@@ -35,9 +35,11 @@ public class SecurityConfig {
         .cors(Customizer.withDefaults())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(authorize -> authorize
+        .requestMatchers("/error").permitAll()
             // Acesso público
             .requestMatchers(HttpMethod.POST, "/user").permitAll()
             .requestMatchers(HttpMethod.POST, "/user/login").permitAll()
+            .requestMatchers(HttpMethod.POST, "/user/logout").authenticated()
 
             // Outros endpoints do usuário
             .requestMatchers("/user/**").authenticated()
@@ -49,6 +51,9 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.POST, "/sala").hasRole("PROFESSOR")
             .requestMatchers(HttpMethod.POST, "/sala/atividades").hasRole("PROFESSOR")
             .requestMatchers(HttpMethod.GET, "/sala/atividades/sala/**").hasRole("PROFESSOR")
+
+            .requestMatchers(HttpMethod.POST, "/sala/avisos").hasRole("PROFESSOR")
+            .requestMatchers(HttpMethod.GET, "/sala/avisos").authenticated()
             
             // Tudo dentro de /sala é protegido por token
             .requestMatchers("/sala/**").authenticated()
@@ -59,6 +64,7 @@ public class SecurityConfig {
         .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
+    
 }
 
 

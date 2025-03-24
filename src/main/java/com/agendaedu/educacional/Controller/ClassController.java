@@ -3,9 +3,12 @@ package com.agendaedu.educacional.Controller;
 import com.agendaedu.educacional.DTOs.ActivityDTO;
 import com.agendaedu.educacional.DTOs.GetClassDTO;
 import com.agendaedu.educacional.DTOs.JoinClassDTO;
+import com.agendaedu.educacional.DTOs.NoticeDTO;
 import com.agendaedu.educacional.Entities.ClassEntity;
 import com.agendaedu.educacional.Entities.ClassHistoryEntity;
+import com.agendaedu.educacional.Entities.Notice;
 import com.agendaedu.educacional.Services.ClassService;
+import com.agendaedu.educacional.Services.NoticeService;
 import com.agendaedu.educacional.Services.ActivityService;
 import com.agendaedu.educacional.Services.PresenceService;
 import com.agendaedu.educacional.DTOs.StudentActivityDTO;
@@ -25,6 +28,7 @@ public class ClassController {
     private final ClassService classService;
     private final ActivityService activityService;
     private final PresenceService presenceService;
+    private final NoticeService noticeService;
 
     @PostMapping
     public ResponseEntity<ClassEntity> createClass(@RequestBody ClassEntity classEntity) {
@@ -97,6 +101,16 @@ public class ClassController {
     public ResponseEntity<String> cancelarPresenca(@PathVariable Long id) {
         presenceService.cancelarPresenca(id);
         return ResponseEntity.ok("Presença cancelada com sucesso.");
+    }
+
+     @PostMapping("/avisos")
+    public ResponseEntity<String> createNotice(@RequestBody NoticeDTO dto) {
+        return ResponseEntity.ok(noticeService.createNotice(dto));
+    }
+
+    @GetMapping("/avisos")
+    public ResponseEntity<List<Notice>> getNotices() {
+        return ResponseEntity.ok(noticeService.getNoticesByUserClass());
     }
 }
 

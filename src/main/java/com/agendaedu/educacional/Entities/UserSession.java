@@ -18,19 +18,13 @@ public class UserSession {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne // Alterei de OneToOne para ManyToOne (um usuário pode ter várias sessões)
     @JoinColumn(name = "usuario_id", nullable = false)
     private User user;
 
-    @Column(nullable = false, unique = true, length = 512)
-    private String token;
+    @Column(name = "entrou", nullable = false)
+    private LocalDateTime entrou;
 
-    @Column(nullable = false)
-    private LocalDateTime lastActivity;
-    public UserSession(User user, String token) {
-        this.user = user;
-        this.token = token;
-        this.lastActivity = LocalDateTime.now();
-    }
+    @Column(name = "saiu")
+    private LocalDateTime saiu;
 }
-

@@ -17,7 +17,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -77,31 +79,51 @@ public class UserService {
      * Faz login e retorna um token de autenticação.
      */
     public LoginResponseDTO login(LoginRequestDTO dto) {
-        Optional<User> optionalUser = Optional.empty();
-    
-        if (dto.getEmail() != null && !dto.getEmail().isEmpty()) {
-            optionalUser = userRepository.findByEmail(dto.getEmail());
-        } else if (dto.getMatricula() != null && !dto.getMatricula().isEmpty()) {
-            optionalUser = userRepository.findByMatricula(dto.getMatricula());
-        } else {
-            throw new RuntimeException("Informe o e-mail ou a matrícula para login.");
-        }
-    
-        User user = optionalUser.orElseThrow(() ->
-            new UserNotFoundException(dto.getEmail() != null ? dto.getEmail() : dto.getMatricula())
-        );
-    
-        if (!passwordEncoder.matches(dto.getSenha(), user.getSenha())) {
-            throw new InvalidCredentialsException();
-        }
-    
-        String token = tokenService.generateToken(user);
-        UserSession session = new UserSession(user, token);
-        sessionRepository.save(session);
-    
-        return new LoginResponseDTO("Login realizado com sucesso!", token);
+    Optional<User> optionalUser = Optional.empty();
+
+    if (dto.getEmail() != null && !dto.getEmail().isEmpty()) {
+        optionalUser = userRepository.findByEmail(dto.getEmail());
+    } else if (dto.getMatricula() != null && !dto.getMatricula().isEmpty()) {
+        optionalUser = userRepository.findByMatricula(dto.getMatricula());
+    } else {
+        throw new RuntimeException("Informe o e-mail ou a matrícula para login.");
     }
 
+    User user = optionalUser.orElseThrow(() ->
+        new UserNotFoundException(dto.getEmail() != null ? dto.getEmail() : dto.getMatricula())
+    );
+
+    if (!passwordEncoder.matches(dto.getSenha(), user.getSenha())) {
+        throw new InvalidCredentialsException();
+    }
+
+    // Gera o token JWT
+    String token = tokenService.generateToken(user);
+
+    // Cria uma nova sessão marcando o horário de entrada
+    UserSession session = UserSession.builder()
+        .user(user)
+        .entrou(LocalDateTime.now())
+        .build();
+
+    sessionRepository.save(session);
+
+    return new LoginResponseDTO("Login realizado com sucesso!", token);
+}
+        @Transactional
+        public void logout() {
+            User user = getUsuarioLogado();
+
+            // Busca a última sessão ativa do usuário (a mais recente)
+            Optional<UserSession> optionalSession = sessionRepository
+                    .findTopByUserOrderByEntrouDesc(user);
+
+            if (optionalSession.isPresent()) {
+                UserSession session = optionalSession.get();
+                session.setSaiu(LocalDateTime.now());
+                sessionRepository.save(session);
+            }
+        }
 
      public UserInfoDTO getPerfil() {
         User user = getUsuarioLogado();

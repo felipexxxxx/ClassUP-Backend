@@ -9,12 +9,10 @@ import com.agendaedu.educacional.DTOs.NewUserDTO;
 import com.agendaedu.educacional.DTOs.UpdateEmailDTO;
 import com.agendaedu.educacional.DTOs.UpdatePasswordDTO;
 import com.agendaedu.educacional.DTOs.UserInfoDTO;
-import com.agendaedu.educacional.Exceptions.UserNotFoundException;
 
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/user")
@@ -41,6 +39,11 @@ public class UserController {
            return ResponseEntity.ok(userService.login(dto));
        }
        
+       @PostMapping("/logout")
+        public ResponseEntity<String> logout() {
+            userService.logout();
+            return ResponseEntity.ok("Logout realizado com sucesso!");
+    }
        @GetMapping
         public ResponseEntity<UserInfoDTO> getPerfil() {
             return ResponseEntity.ok(userService.getPerfil());
@@ -58,15 +61,15 @@ public class UserController {
 
    
        // ✅ Atualiza atividade da sessão (usado pelo frontend)
-       @PostMapping("/ping")
-       public ResponseEntity<Void> heartbeat(@RequestHeader("Authorization") String token) {
-           token = token.replace("Bearer ", "");
-           var session = sessionRepository.findByToken(token)
-                   .orElseThrow(() -> new UserNotFoundException("Sessão inválida"));
+    //    @PostMapping("/ping")
+    //    public ResponseEntity<Void> heartbeat(@RequestHeader("Authorization") String token) {
+    //        token = token.replace("Bearer ", "");
+    //        var session = sessionRepository.findByToken(token)
+    //                .orElseThrow(() -> new UserNotFoundException("Sessão inválida"));
    
-           session.setLastActivity(LocalDateTime.now());
-           sessionRepository.save(session);
+    //        session.setLastActivity(LocalDateTime.now());
+    //        sessionRepository.save(session);
    
-           return ResponseEntity.ok().build();
-       }
+    //        return ResponseEntity.ok().build();
+    //    }
    }

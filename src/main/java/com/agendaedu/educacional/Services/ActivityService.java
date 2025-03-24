@@ -64,10 +64,10 @@ public class ActivityService {
             Local: %s
             Data e Hora: %s
 
-            Confirme sua presença no portal.
+            Confirme sua presença no portal😊.
 
-            Abraço,
-            Agenda Edu
+            Atenciosamente,
+            ClassUP
             """.formatted(aluno.getNomeCompleto(), activity.getTitulo(), activity.getDescricao(), activity.getLocal(), activity.getDataHora());
 
         emailService.sendEmail(aluno.getEmail(), "Nova Atividade: " + activity.getTitulo(), emailBody);
