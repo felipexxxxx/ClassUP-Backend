@@ -18,7 +18,7 @@ public class ClassHistoryDetalhesDTO {
     private SimpleUserDTO professor;
     private List<SimpleUserDTO> alunos;
     private List<ActivityHistoryDTO> atividades;
-    private List<NoticeHistoryDTO> avisos;
+    private List<NoticeExibicao> avisos;
 }
 
 

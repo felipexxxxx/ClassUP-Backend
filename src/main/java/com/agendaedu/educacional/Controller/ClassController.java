@@ -3,8 +3,10 @@ package com.agendaedu.educacional.Controller;
 import com.agendaedu.educacional.DTOs.ActivityDTO;
 import com.agendaedu.educacional.DTOs.ClassHistoryDetalhesDTO;
 import com.agendaedu.educacional.DTOs.GetClassDTO;
+import com.agendaedu.educacional.DTOs.GetClassDetalhadoDTO;
 import com.agendaedu.educacional.DTOs.JoinClassDTO;
 import com.agendaedu.educacional.DTOs.NoticeDTO;
+import com.agendaedu.educacional.DTOs.ProfessorSalaDTO;
 import com.agendaedu.educacional.Entities.ClassEntity;
 import com.agendaedu.educacional.Entities.ClassHistoryEntity;
 import com.agendaedu.educacional.Entities.Notice;
@@ -35,6 +37,18 @@ public class ClassController {
     public ResponseEntity<ClassEntity> createClass(@RequestBody ClassEntity classEntity) {
         return ResponseEntity.ok(classService.createClass(classEntity));
     }
+
+    @GetMapping
+    public ResponseEntity<List<ProfessorSalaDTO>> getSalasDoProfessor() {
+        return ResponseEntity.ok(classService.getSalasDoProfessor());
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<GetClassDetalhadoDTO> getDetalhesPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(classService.getDetalhesSalaPorId(id));
+}
+
+
 
     @PostMapping("/entrar")
     public ResponseEntity<String> joinClass(@RequestBody JoinClassDTO dto) {

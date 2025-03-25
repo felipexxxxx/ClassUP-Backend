@@ -28,6 +28,6 @@ public class Notice {
 
     @ManyToOne
     @JoinColumn(name = "sala_id") // ← coluna do banco que faz a FK com a sala
-    @JsonIgnore // <-- Adicione isso
+    @JsonIgnore 
     private ClassEntity sala;
 }

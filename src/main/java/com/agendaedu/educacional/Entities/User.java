@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -42,6 +44,7 @@ public class User {
 
     // Relacionamento com sala (aluno participa de uma sala)
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "sala_id")
     private ClassEntity sala; }
 

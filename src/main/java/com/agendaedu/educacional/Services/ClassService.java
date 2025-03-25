@@ -5,6 +5,7 @@ import com.agendaedu.educacional.Entities.ClassEntity;
 import com.agendaedu.educacional.Entities.Role;
 import com.agendaedu.educacional.Entities.User;
 import com.agendaedu.educacional.Entities.ClassHistoryEntity;
+import com.agendaedu.educacional.Entities.Notice;
 import com.agendaedu.educacional.Entities.Presence;
 import com.agendaedu.educacional.Entities.PresenceStatus;
 import com.agendaedu.educacional.Repositories.ClassRepository;
@@ -13,10 +14,14 @@ import com.agendaedu.educacional.Repositories.ClassHistoryRepository;
 import com.agendaedu.educacional.Repositories.PresenceRepository;
 import com.agendaedu.educacional.Repositories.ActivityRepository;
 import com.agendaedu.educacional.Repositories.NoticeRepository;
+import com.agendaedu.educacional.DTOs.ActivityDTO;
 import com.agendaedu.educacional.DTOs.ActivityHistoryDTO;
 import com.agendaedu.educacional.DTOs.ClassHistoryDetalhesDTO;
 import com.agendaedu.educacional.DTOs.GetClassDTO;
-import com.agendaedu.educacional.DTOs.NoticeHistoryDTO;
+import com.agendaedu.educacional.DTOs.GetClassDetalhadoDTO;
+import com.agendaedu.educacional.DTOs.NoticeDTO;
+import com.agendaedu.educacional.DTOs.NoticeExibicao;
+import com.agendaedu.educacional.DTOs.ProfessorSalaDTO;
 import com.agendaedu.educacional.DTOs.SimpleUserDTO;
 import com.agendaedu.educacional.DTOs.StudentClassDTO;
 import java.util.List;
@@ -180,8 +185,8 @@ public String joinClass(String codigoDeEntrada) {
         .toList();
 
     // Avisos da sala
-    List<NoticeHistoryDTO> avisos = noticeRepository.findBySala(sala).stream()
-    .map(n -> new NoticeHistoryDTO(n.getId(), n.getTitulo(), n.getMensagem(), n.getEnviadaEm()))
+    List<NoticeExibicao> avisos = noticeRepository.findBySala(sala).stream()
+    .map(n -> new NoticeExibicao(n.getId(), n.getTitulo(), n.getMensagem(), n.getEnviadaEm()))
     .toList();
 
 
@@ -291,6 +296,54 @@ public String joinClass(String codigoDeEntrada) {
             alunos
         );
     }
+
+    public List<ProfessorSalaDTO> getSalasDoProfessor() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    User professor = (User) auth.getPrincipal();
+
+    if (!professor.getRole().equals(Role.PROFESSOR)) {
+        throw new RuntimeException("Apenas professores podem visualizar suas salas.");
+    }
+
+    return classRepository.findByProfessor(professor).stream()
+            .map(sala -> new ProfessorSalaDTO(
+                sala.getId(),
+                sala.getNome(),
+                sala.getCodigoAcesso()
+            ))
+            .toList();
+}
+
+
+public GetClassDetalhadoDTO getDetalhesSalaPorId(Long salaId) {
+    ClassEntity sala = classRepository.findById(salaId)
+        .orElseThrow(() -> new RuntimeException("Sala não encontrada"));
+
+    List<User> alunos = userRepository.findBySalaAndRole(sala, Role.ALUNO);
+    List<Activity> atividades = activityRepository.findBySalaId(salaId);
+    List<Notice> avisos = noticeRepository.findBySala(sala);
+
+    List<NoticeDTO> avisosDTO = avisos.stream().map(aviso -> {
+        NoticeDTO dto = new NoticeDTO();
+        dto.setTitulo(aviso.getTitulo());
+        dto.setMensagem(aviso.getMensagem());
+        // dto.setSala(null); // opcional, se quiser deixar explícito que não será enviado
+        return dto;
+    }).toList();
+
+    return new GetClassDetalhadoDTO(
+        sala.getId(),
+        sala.getNome(),
+        sala.getCodigoAcesso(),
+        sala.getProfessor(),
+        alunos,
+        atividades,
+        avisos
+    );
+}
+
+
+
 
 
 
