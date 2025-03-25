@@ -126,4 +126,42 @@ public class ActivityService {
             })
             .toList();
     }
+    @Transactional
+    public void editarAtividade(Long id, ActivityDTO dto) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User professor = (User) auth.getPrincipal();
+
+        Activity atividade = activityRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
+
+        // Verifica se o professor atual é o dono da sala vinculada à atividade
+        if (!atividade.getSala().getProfessor().getId().equals(professor.getId())) {
+            throw new RuntimeException("Você não tem permissão para editar esta atividade.");
+        }
+
+        atividade.setTitulo(dto.titulo());
+        atividade.setDescricao(dto.descricao());
+        atividade.setLocal(dto.local());
+        atividade.setDataHora(dto.data()); // aqui era o problema
+
+        activityRepository.save(atividade);
+    }
+
+    @Transactional
+    public void deletarAtividade(Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User professor = (User) auth.getPrincipal();
+
+        Activity atividade = activityRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
+
+    // Verifica se o professor atual é o dono da sala
+        if (!atividade.getSala().getProfessor().getId().equals(professor.getId())) {
+        throw new RuntimeException("Você não tem permissão para excluir esta atividade.");
+        }
+
+        activityRepository.delete(atividade);
+}
+
+
 }

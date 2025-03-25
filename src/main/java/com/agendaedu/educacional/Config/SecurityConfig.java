@@ -54,8 +54,6 @@ public class SecurityConfig {
 
             .requestMatchers(HttpMethod.POST, "/sala/avisos").hasRole("PROFESSOR")
             .requestMatchers(HttpMethod.GET, "/sala/avisos").authenticated()
-            
-            // Tudo dentro de /sala é protegido por token
             .requestMatchers("/sala/**").authenticated()
 
             // Qualquer outra requisição também exige autenticação
