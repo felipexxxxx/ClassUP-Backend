@@ -11,4 +11,5 @@ public interface ClassHistoryRepository extends JpaRepository<ClassHistoryEntity
     List<ClassHistoryEntity> findByUsuario(User usuario);
     boolean existsBySalaAndUsuarioAndRole(ClassEntity sala, User usuario, Role role);
     List<ClassHistoryEntity> findBySala(ClassEntity sala);
+    List<ClassHistoryEntity> findBySalaAndUsuario(ClassEntity sala, User usuario);
 }

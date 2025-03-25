@@ -19,7 +19,6 @@ import com.agendaedu.educacional.DTOs.ActivityHistoryDTO;
 import com.agendaedu.educacional.DTOs.ClassHistoryDetalhesDTO;
 import com.agendaedu.educacional.DTOs.GetClassDTO;
 import com.agendaedu.educacional.DTOs.GetClassDetalhadoDTO;
-import com.agendaedu.educacional.DTOs.NoticeDTO;
 import com.agendaedu.educacional.DTOs.NoticeExibicao;
 import com.agendaedu.educacional.DTOs.ProfessorSalaDTO;
 import com.agendaedu.educacional.DTOs.SimpleUserDTO;
@@ -45,6 +44,7 @@ public class ClassService {
     private final PresenceRepository presenceRepository;
     private final ActivityRepository activityRepository;
     private final NoticeRepository noticeRepository;
+    private final EmailService emailService;
 
     @Transactional
     public ClassEntity createClass(ClassEntity classEntity) {
@@ -67,7 +67,7 @@ public class ClassService {
 }
 
     @Transactional
-public String joinClass(String codigoDeEntrada) {
+    public String joinClass(String codigoDeEntrada) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     User user = (User) auth.getPrincipal();
 
@@ -107,88 +107,132 @@ public String joinClass(String codigoDeEntrada) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User professor = (User) auth.getPrincipal();
 
-        if (!professor.getRole().equals(Role.PROFESSOR)) {
+    if (!professor.getRole().equals(Role.PROFESSOR)) {
         throw new RuntimeException("Apenas professores podem encerrar o semestre.");
     }
 
-    // Busca apenas salas onde ele ainda é o professor vinculado
-        List<ClassEntity> salasAtivas = classRepository.findByProfessor(professor);
+    // Busca todas as salas ativas vinculadas a esse professor
+    List<ClassEntity> salasAtivas = classRepository.findByProfessor(professor);
 
-        if (salasAtivas.isEmpty()) {
-            throw new RuntimeException("Você não possui salas ativas para encerrar.");
-        }
+    if (salasAtivas.isEmpty()) {
+        throw new RuntimeException("Você não possui salas ativas para encerrar.");
+    }
 
-        for (ClassEntity sala : salasAtivas) {
-            // Se a sala já estiver no histórico, a gente não ignora — a gente verifica se AINDA está ativo!
-            // Isso garante que professor só será desvinculado se ainda está vinculado
-            if (sala.getProfessor() != null && sala.getProfessor().getId().equals(professor.getId())) {
+    for (ClassEntity sala : salasAtivas) {
+        // Confirma que o professor ainda está vinculado
+        if (sala.getProfessor() != null && sala.getProfessor().getId().equals(professor.getId())) {
 
-                // 1. Registra professor no histórico
-                if (!salaHistoricoRepository.existsBySalaAndUsuarioAndRole(sala, professor, Role.PROFESSOR)) {
+            // 1. Salva o professor no histórico (caso ainda não esteja)
+            if (!salaHistoricoRepository.existsBySalaAndUsuarioAndRole(sala, professor, Role.PROFESSOR)) {
+                salaHistoricoRepository.save(ClassHistoryEntity.builder()
+                        .usuario(professor)
+                        .sala(sala)
+                        .role(Role.PROFESSOR)
+                        .dataEncerramento(LocalDateTime.now())
+                        .build());
+            }
+
+            // 2. Salva os alunos no histórico e os desvincula da sala
+            List<User> alunos = userRepository.findBySalaAndRole(sala, Role.ALUNO);
+            for (User aluno : alunos) {
+                if (!salaHistoricoRepository.existsBySalaAndUsuarioAndRole(sala, aluno, Role.ALUNO)) {
                     salaHistoricoRepository.save(ClassHistoryEntity.builder()
-                            .usuario(professor)
+                            .usuario(aluno)
                             .sala(sala)
-                            .role(Role.PROFESSOR)
+                            .role(Role.ALUNO)
                             .dataEncerramento(LocalDateTime.now())
                             .build());
-            }
-
-                // 2. Registra alunos e desvincula
-                List<User> alunos = userRepository.findBySalaAndRole(sala, Role.ALUNO);
-                for (User aluno : alunos) {
-                    if (!salaHistoricoRepository.existsBySalaAndUsuarioAndRole(sala, aluno, Role.ALUNO)) {
-                        salaHistoricoRepository.save(ClassHistoryEntity.builder()
-                                .usuario(aluno)
-                                .sala(sala)
-                                .role(Role.ALUNO)
-                                .dataEncerramento(LocalDateTime.now())
-                                .build());
-                    }
-
-                    aluno.setSala(null);
                 }
 
-                // 3. Desvincula o professor da sala
-                sala.setProfessor(null);
+                aluno.setSala(null);
 
-                // 4. Salva atualizações
-                userRepository.saveAll(alunos);
-                classRepository.save(sala);
+                // 3. Envia e-mail ao aluno
+                String corpoEmail = """
+                    Olá %s,
+
+                    Informamos que o semestre da sala "%s" foi encerrado pelo professor(a) %s.
+
+                    Você foi desvinculado desta sala e poderá ingressar em uma nova assim que disponível.
+                    Boas férias😊😊!
+
+                    Atenciosamente,
+                    ClassUP
+                    """.formatted(
+                        aluno.getNomeCompleto(),
+                        sala.getNome(),
+                        professor.getNomeCompleto()
+                );
+
+                emailService.sendEmail(
+                    aluno.getEmail(),
+                    "Semestre Encerrado - Sala " + sala.getNome(),
+                    corpoEmail
+                );
             }
+
+            // 4. Desvincula o professor da sala
+            sala.setProfessor(null);
+
+            // 5. Salva atualizações no banco
+            userRepository.saveAll(alunos);
+            classRepository.save(sala);
         }
+    }
 
     return "Semestre encerrado com sucesso. Todas as salas foram encerradas.";
 }
 
-   public ClassHistoryDetalhesDTO buscarDetalhesHistorico(Long salaId) {
+
+public ClassHistoryDetalhesDTO buscarDetalhesHistorico(Long salaId) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    User usuarioLogado = (User) auth.getPrincipal();
+
     ClassEntity sala = classRepository.findById(salaId)
         .orElseThrow(() -> new RuntimeException("Sala não encontrada"));
 
-    List<ClassHistoryEntity> historico = salaHistoricoRepository.findBySala(sala);
+        List<ClassHistoryEntity> historico = salaHistoricoRepository.findBySalaAndUsuario(sala, usuarioLogado);
+
+    if (historico.isEmpty()) {
+        throw new RuntimeException("Você não participou dessa sala.");
+    }
 
     // Professor
-    User professor = historico.stream()
+    User professor = salaHistoricoRepository.findBySala(sala).stream()
         .filter(h -> h.getRole() == Role.PROFESSOR)
         .map(ClassHistoryEntity::getUsuario)
         .findFirst()
         .orElse(null);
 
     // Alunos
-    List<SimpleUserDTO> alunos = historico.stream()
+    List<SimpleUserDTO> alunos = salaHistoricoRepository.findBySala(sala).stream()
         .filter(h -> h.getRole() == Role.ALUNO)
         .map(h -> new SimpleUserDTO(h.getUsuario().getId(), h.getUsuario().getNomeCompleto()))
         .toList();
 
-    // Atividades da sala
-    List<ActivityHistoryDTO> atividades = activityRepository.findBySalaId(salaId).stream()
-        .map(a -> new ActivityHistoryDTO(a.getId(), a.getTitulo(), a.getDescricao(), a.getDataHora()))
+    // Atividades da sala (com status real do aluno logado)
+    List<Activity> atividadesSala = activityRepository.findBySalaId(salaId);
+    List<ActivityHistoryDTO> atividades = atividadesSala.stream()
+        .map(a -> {
+            PresenceStatus status = presenceRepository
+                .findByUsuarioAndAtividade(usuarioLogado, a)
+                .map(Presence::getStatus)
+                .orElse(PresenceStatus.PENDENTE);
+
+            return new ActivityHistoryDTO(
+                a.getId(),
+                a.getTitulo(),
+                a.getDescricao(),
+                a.getDataHora(),
+                status,
+                a.getLocal()
+            );
+        })
         .toList();
 
-    // Avisos da sala
+    // Avisos
     List<NoticeExibicao> avisos = noticeRepository.findBySala(sala).stream()
-    .map(n -> new NoticeExibicao(n.getId(), n.getTitulo(), n.getMensagem(), n.getEnviadaEm()))
-    .toList();
-
+        .map(n -> new NoticeExibicao(n.getId(), n.getTitulo(), n.getMensagem(), n.getEnviadaEm()))
+        .toList();
 
     return new ClassHistoryDetalhesDTO(
         sala.getNome(),
@@ -200,6 +244,7 @@ public String joinClass(String codigoDeEntrada) {
         avisos
     );
 }
+
 
 
 
@@ -320,16 +365,19 @@ public GetClassDetalhadoDTO getDetalhesSalaPorId(Long salaId) {
         .orElseThrow(() -> new RuntimeException("Sala não encontrada"));
 
     List<User> alunos = userRepository.findBySalaAndRole(sala, Role.ALUNO);
-    List<Activity> atividades = activityRepository.findBySalaId(salaId);
     List<Notice> avisos = noticeRepository.findBySala(sala);
 
-    List<NoticeDTO> avisosDTO = avisos.stream().map(aviso -> {
-        NoticeDTO dto = new NoticeDTO();
-        dto.setTitulo(aviso.getTitulo());
-        dto.setMensagem(aviso.getMensagem());
-        // dto.setSala(null); // opcional, se quiser deixar explícito que não será enviado
-        return dto;
-    }).toList();
+    // Adaptando atividades → ActivityDTO
+    List<ActivityDTO> atividadesDTO = activityRepository.findBySalaId(salaId)
+        .stream()
+        .map(a -> new ActivityDTO(
+            a.getId(),
+            a.getTitulo(),
+            a.getDescricao(),
+            a.getLocal(),
+            a.getDataHora() 
+        ))
+        .toList();
 
     return new GetClassDetalhadoDTO(
         sala.getId(),
@@ -337,10 +385,11 @@ public GetClassDetalhadoDTO getDetalhesSalaPorId(Long salaId) {
         sala.getCodigoAcesso(),
         sala.getProfessor(),
         alunos,
-        atividades,
+        atividadesDTO,
         avisos
     );
 }
+
 
 
 

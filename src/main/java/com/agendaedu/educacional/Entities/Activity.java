@@ -5,7 +5,6 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Getter
 @Setter
@@ -30,7 +29,6 @@ public class Activity {
     private LocalDateTime dataHora;
 
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "sala_id", nullable = false)
     private ClassEntity sala;
     }

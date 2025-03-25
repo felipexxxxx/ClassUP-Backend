@@ -77,9 +77,6 @@ public class ActivityService {
 }
 
 
-    public List<Activity> getAllActivities() {
-        return activityRepository.findAll();
-    }
 
     public List<ActivityDTO> getActivitiesBySala(Long salaId) {
         List<Activity> atividades = activityRepository.findBySalaId(salaId);

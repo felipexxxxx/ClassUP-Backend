@@ -8,5 +8,5 @@ public record ActivityDTO(
     String titulo,
     String descricao,
     String local,
-    LocalDateTime dataHora
+    LocalDateTime data
 ) {}

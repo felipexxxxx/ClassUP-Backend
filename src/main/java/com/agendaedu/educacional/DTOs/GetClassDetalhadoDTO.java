@@ -1,7 +1,7 @@
 // DTOs/GetClassDetalhadoDTO.java
 package com.agendaedu.educacional.DTOs;
 
-import com.agendaedu.educacional.Entities.Activity;
+
 import com.agendaedu.educacional.Entities.Notice;
 import com.agendaedu.educacional.Entities.User;
 
@@ -13,6 +13,7 @@ public record GetClassDetalhadoDTO(
     String codigoAcesso,
     User professor,
     List<User> alunos,
-    List<Activity> atividades,
-    List<Notice> avisos
+    List<ActivityDTO> atividades, // <-- aqui mudou!
+    List<Notice> avisos        // <-- aqui também
 ) {}
+
