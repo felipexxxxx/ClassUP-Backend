@@ -4,10 +4,10 @@ import com.agendaedu.educacional.DTOs.ActivityDTO;
 import com.agendaedu.educacional.DTOs.ActivityResumoDTO;
 import com.agendaedu.educacional.DTOs.StudentActivityDTO;
 import com.agendaedu.educacional.Entities.*;
+import com.agendaedu.educacional.Entities.enums.PresenceStatus;
+import com.agendaedu.educacional.Entities.enums.Role;
 import com.agendaedu.educacional.Repositories.ActivityRepository;
-import com.agendaedu.educacional.Repositories.NotificationRepository;
 import com.agendaedu.educacional.Repositories.UserRepository;
-import com.agendaedu.educacional.Repositories.ClassRepository;
 import com.agendaedu.educacional.Repositories.PresenceRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,26 +27,16 @@ public class ActivityService {
     private final ActivityRepository activityRepository;
     private final PresenceRepository presenceRepository;
     private final UserRepository userRepository;
-    private final NotificationRepository notificationRepository;
     private final EmailService emailService; 
-    private final ClassRepository classRepository;
-
+   
     @Transactional
-    public Activity createActivity(Activity activity) {
+    public Activity criarAtividade(Activity activity) {
         Activity savedActivity = activityRepository.save(activity);
 
     // Pega todos os alunos da sala
         List<User> alunos = userRepository.findBySalaAndRole(activity.getSala(), Role.ALUNO);
 
     for (User aluno : alunos) {
-        // Cria a notificação
-        Notification notification = Notification.builder()
-                .atividade(savedActivity)
-                .usuario(aluno)
-                .mensagem("Nova atividade: " + savedActivity.getTitulo())
-                .dataEnvio(savedActivity.getDataHora())
-                .build();
-        notificationRepository.save(notification);
 
         // Cria presença com status PENDENTE
         Presence presence = Presence.builder()

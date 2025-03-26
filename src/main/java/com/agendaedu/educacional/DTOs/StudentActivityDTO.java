@@ -2,7 +2,7 @@ package com.agendaedu.educacional.DTOs;
 
 import java.time.LocalDateTime;
 
-import com.agendaedu.educacional.Entities.PresenceStatus;
+import com.agendaedu.educacional.Entities.enums.PresenceStatus;
 
 public record StudentActivityDTO (
      Long id,

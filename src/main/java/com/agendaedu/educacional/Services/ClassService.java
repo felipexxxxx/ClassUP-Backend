@@ -2,12 +2,12 @@ package com.agendaedu.educacional.Services;
 
 import com.agendaedu.educacional.Entities.Activity;
 import com.agendaedu.educacional.Entities.ClassEntity;
-import com.agendaedu.educacional.Entities.Role;
 import com.agendaedu.educacional.Entities.User;
+import com.agendaedu.educacional.Entities.enums.PresenceStatus;
+import com.agendaedu.educacional.Entities.enums.Role;
 import com.agendaedu.educacional.Entities.ClassHistoryEntity;
 import com.agendaedu.educacional.Entities.Notice;
 import com.agendaedu.educacional.Entities.Presence;
-import com.agendaedu.educacional.Entities.PresenceStatus;
 import com.agendaedu.educacional.Repositories.ClassRepository;
 import com.agendaedu.educacional.Repositories.UserRepository;
 import com.agendaedu.educacional.Repositories.ClassHistoryRepository;
@@ -19,10 +19,9 @@ import com.agendaedu.educacional.DTOs.ActivityHistoryDTO;
 import com.agendaedu.educacional.DTOs.ClassHistoryDetalhesDTO;
 import com.agendaedu.educacional.DTOs.GetClassDTO;
 import com.agendaedu.educacional.DTOs.GetClassDetalhadoDTO;
-import com.agendaedu.educacional.DTOs.NoticeExibicao;
-import com.agendaedu.educacional.DTOs.ProfessorSalaDTO;
+import com.agendaedu.educacional.DTOs.NoticeExibicaoDTO;
+import com.agendaedu.educacional.DTOs.ClassDTO;
 import com.agendaedu.educacional.DTOs.SimpleUserDTO;
-import com.agendaedu.educacional.DTOs.StudentClassDTO;
 import java.util.List;
 import org.springframework.security.core.Authentication;
 
@@ -232,8 +231,8 @@ public ClassHistoryDetalhesDTO buscarDetalhesHistorico(Long salaId) {
         .toList();
 
     // Avisos
-    List<NoticeExibicao> avisos = noticeRepository.findBySala(sala).stream()
-        .map(n -> new NoticeExibicao(n.getId(), n.getTitulo(), n.getMensagem(), n.getEnviadaEm()))
+    List<NoticeExibicaoDTO> avisos = noticeRepository.findBySala(sala).stream()
+        .map(n -> new NoticeExibicaoDTO(n.getId(), n.getTitulo(), n.getMensagem(), n.getEnviadaEm()))
         .toList();
 
     return new ClassHistoryDetalhesDTO(
@@ -307,7 +306,7 @@ public String removerAlunoDaSala(Long alunoId) {
 
 
 
-    public StudentClassDTO getMinhaSalaAtual() {
+    public ClassDTO getMinhaSalaAtual() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (!user.getRole().equals(Role.ALUNO)) {
@@ -320,7 +319,7 @@ public String removerAlunoDaSala(Long alunoId) {
             throw new RuntimeException("Você ainda não está vinculado a nenhuma sala.");
         }
 
-        return new StudentClassDTO(
+        return new ClassDTO(
             sala.getId(),
             sala.getNome(),
             sala.getCodigoAcesso()
@@ -362,7 +361,7 @@ public String removerAlunoDaSala(Long alunoId) {
         );
     }
 
-    public List<ProfessorSalaDTO> getSalasDoProfessor() {
+    public List<ClassDTO> getSalasDoProfessor() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     User professor = (User) auth.getPrincipal();
 
@@ -371,7 +370,7 @@ public String removerAlunoDaSala(Long alunoId) {
     }
 
     return classRepository.findByProfessor(professor).stream()
-            .map(sala -> new ProfessorSalaDTO(
+            .map(sala -> new ClassDTO(
                 sala.getId(),
                 sala.getNome(),
                 sala.getCodigoAcesso()

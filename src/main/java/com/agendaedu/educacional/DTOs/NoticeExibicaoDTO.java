@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-public class NoticeExibicao {
+public class NoticeExibicaoDTO {
     private Long id;
     private String titulo;
     private String mensagem;

@@ -3,6 +3,7 @@ package com.agendaedu.educacional.Services;
 import com.agendaedu.educacional.DTOs.NoticeDTO;
 
 import com.agendaedu.educacional.Entities.*;
+import com.agendaedu.educacional.Entities.enums.Role;
 import com.agendaedu.educacional.Repositories.ClassRepository;
 import com.agendaedu.educacional.Repositories.NoticeRepository;
 import com.agendaedu.educacional.Repositories.UserRepository;

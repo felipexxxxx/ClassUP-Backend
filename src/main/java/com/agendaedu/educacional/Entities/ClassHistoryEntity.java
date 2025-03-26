@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+import com.agendaedu.educacional.Entities.enums.Role;
+
 @Entity
 @Table(name = "classes_history")
 @Data

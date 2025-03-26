@@ -1,4 +1,4 @@
-package com.agendaedu.educacional.Entities;
+package com.agendaedu.educacional.Entities.enums;
 
 public enum PresenceStatus {
     PENDENTE("Pendente"),

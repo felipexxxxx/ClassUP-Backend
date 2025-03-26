@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 
+import com.agendaedu.educacional.Entities.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity

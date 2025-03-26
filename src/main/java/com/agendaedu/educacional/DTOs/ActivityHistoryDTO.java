@@ -1,8 +1,11 @@
 package com.agendaedu.educacional.DTOs;
 
 import lombok.AllArgsConstructor;
-import com.agendaedu.educacional.Entities.PresenceStatus;
+
 import java.time.LocalDateTime;
+
+import com.agendaedu.educacional.Entities.enums.PresenceStatus;
+
 import lombok.Getter;
 import lombok.Setter;
 

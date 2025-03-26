@@ -30,39 +30,25 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .csrf(csrf -> csrf.disable())
-        .cors(Customizer.withDefaults())
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(authorize -> authorize
-        .requestMatchers("/error").permitAll()
-            // Acesso público
-            .requestMatchers(HttpMethod.POST, "/user").permitAll()
-            .requestMatchers(HttpMethod.POST, "/user/login").permitAll()
-            .requestMatchers(HttpMethod.POST, "/user/logout").authenticated()
+        http
+            .csrf(csrf -> csrf.disable())
+            .cors(Customizer.withDefaults())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/error").permitAll()
+                .requestMatchers(HttpMethod.POST, "/user").permitAll()
+                .requestMatchers(HttpMethod.POST, "/user/login").permitAll()
+                .requestMatchers(HttpMethod.POST, "/user/logout").authenticated()
+                .requestMatchers("/user/**").authenticated()
+                .requestMatchers("/notificacao/**").authenticated()
+                .requestMatchers("/aluno/**").hasRole("ALUNO")
+                .requestMatchers("/professor/**").hasRole("PROFESSOR")
+                .requestMatchers("/sala/**").authenticated()
+                .anyRequest().authenticated()
+            )
+            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
 
-            // Outros endpoints do usuário
-            .requestMatchers("/user/**").authenticated()
-
-            // Notificações (apenas autenticados)
-            .requestMatchers("/notificacao/**").authenticated()
-
-            // Sala: professores criam, alunos e professores acessam
-            .requestMatchers(HttpMethod.POST, "/sala").hasRole("PROFESSOR")
-            .requestMatchers(HttpMethod.POST, "/sala/atividades").hasRole("PROFESSOR")
-            .requestMatchers(HttpMethod.GET, "/sala/atividades/sala/**").hasRole("PROFESSOR")
-
-            .requestMatchers(HttpMethod.POST, "/sala/avisos").hasRole("PROFESSOR")
-            .requestMatchers(HttpMethod.GET, "/sala/avisos").authenticated()
-            .requestMatchers("/sala/**").authenticated()
-
-            // Qualquer outra requisição também exige autenticação
-            .anyRequest().authenticated()
-        )
-        .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
-
-    return http.build();
-    
+        return http.build();   
 }
 
 

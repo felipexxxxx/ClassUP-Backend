@@ -1,5 +1,7 @@
 package com.agendaedu.educacional.Entities;
 
+import com.agendaedu.educacional.Entities.enums.PresenceStatus;
+
 import jakarta.persistence.*;
 import lombok.*;
 

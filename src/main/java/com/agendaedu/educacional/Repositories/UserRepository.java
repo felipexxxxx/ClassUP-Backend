@@ -2,9 +2,10 @@ package com.agendaedu.educacional.Repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import com.agendaedu.educacional.Entities.Role;
+
 import com.agendaedu.educacional.Entities.ClassEntity;
 import com.agendaedu.educacional.Entities.User;
+import com.agendaedu.educacional.Entities.enums.Role;
 
 import java.util.Optional;
 
