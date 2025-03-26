@@ -3,7 +3,7 @@ package com.agendaedu.educacional.Services;
 import com.agendaedu.educacional.Entities.Presence;
 import com.agendaedu.educacional.Entities.Activity;
 import com.agendaedu.educacional.Entities.User;
-import com.agendaedu.educacional.Entities.enums.PresenceStatus;
+import com.agendaedu.educacional.Enums.PresenceStatus;
 import com.agendaedu.educacional.Repositories.PresenceRepository;
 import com.agendaedu.educacional.Repositories.ActivityRepository;
 import org.springframework.security.core.Authentication;

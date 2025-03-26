@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import com.agendaedu.educacional.Entities.enums.PresenceStatus;
+import com.agendaedu.educacional.Enums.PresenceStatus;
 
 import lombok.Getter;
 import lombok.Setter;
