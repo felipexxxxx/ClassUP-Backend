@@ -8,8 +8,9 @@ public record StudentActivityDTO (
      Long id,
     String titulo,
     String descricao,
+    String local,
     LocalDateTime data,
-    PresenceStatus status,
-    String local
+    PresenceStatus status
+    
 ) {}
 

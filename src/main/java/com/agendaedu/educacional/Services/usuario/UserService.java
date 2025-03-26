@@ -1,7 +1,7 @@
 package com.agendaedu.educacional.Services.usuario;
 
-import com.agendaedu.educacional.DTOs.autenticação.LoginRequestDTO;
-import com.agendaedu.educacional.DTOs.autenticação.LoginResponseDTO;
+import com.agendaedu.educacional.DTOs.autenticacao.LoginRequestDTO;
+import com.agendaedu.educacional.DTOs.autenticacao.LoginResponseDTO;
 import com.agendaedu.educacional.DTOs.usuario.NewUserDTO;
 import com.agendaedu.educacional.DTOs.usuario.UpdateEmailDTO;
 import com.agendaedu.educacional.DTOs.usuario.UpdatePasswordDTO;
@@ -11,7 +11,7 @@ import com.agendaedu.educacional.Entities.usuario.UserSession;
 import com.agendaedu.educacional.Exceptions.*;
 import com.agendaedu.educacional.Repositories.usuario.SessionRepository;
 import com.agendaedu.educacional.Repositories.usuario.UserRepository;
-import com.agendaedu.educacional.Services.autenticação.TokenService;
+import com.agendaedu.educacional.Services.autenticacao.TokenService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;

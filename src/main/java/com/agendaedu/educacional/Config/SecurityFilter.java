@@ -1,7 +1,7 @@
 package com.agendaedu.educacional.Config;
 
 import com.agendaedu.educacional.Entities.usuario.User;
-import com.agendaedu.educacional.Services.autenticação.TokenService;
+import com.agendaedu.educacional.Services.autenticacao.TokenService;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;

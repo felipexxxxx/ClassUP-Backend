@@ -1,4 +1,4 @@
-package com.agendaedu.educacional.Services.autenticação;
+package com.agendaedu.educacional.Services.autenticacao;
 
 import com.agendaedu.educacional.Entities.usuario.User;
 import com.agendaedu.educacional.Repositories.usuario.UserRepository;

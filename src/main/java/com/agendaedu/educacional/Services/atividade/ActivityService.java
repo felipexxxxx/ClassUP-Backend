@@ -2,10 +2,8 @@ package com.agendaedu.educacional.Services.atividade;
 
 import com.agendaedu.educacional.DTOs.atividade.ActivityDTO;
 import com.agendaedu.educacional.DTOs.atividade.ActivityResumoDTO;
-import com.agendaedu.educacional.DTOs.atividade.StudentActivityDTO;
 import com.agendaedu.educacional.Entities.atividade.Activity;
 import com.agendaedu.educacional.Entities.presenca.Presence;
-import com.agendaedu.educacional.Entities.sala.ClassEntity;
 import com.agendaedu.educacional.Entities.usuario.User;
 import com.agendaedu.educacional.Enums.PresenceStatus;
 import com.agendaedu.educacional.Enums.Role;
@@ -16,8 +14,7 @@ import com.agendaedu.educacional.Services.usuario.EmailService;
 
 import jakarta.transaction.Transactional;
 import java.time.format.DateTimeFormatter;
-import lombok.RequiredArgsConstructor;
-import java.util.Collections;   
+import lombok.RequiredArgsConstructor;  
 import org.springframework.security.core.Authentication;
 
 
@@ -82,7 +79,6 @@ public class ActivityService {
     }
 
 
-
     public List<ActivityDTO> getActivitiesBySala(Long salaId) {
         List<Activity> atividades = activityRepository.findBySalaId(salaId);
         return atividades.stream().map(a -> new ActivityDTO(
@@ -94,43 +90,6 @@ public class ActivityService {
     )).toList();
 }
 
-
-    public Activity getById(Long id) {
-        return activityRepository.findById(id).orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
-    }
-
-    
-    public List<StudentActivityDTO> listarAtividadesDoAluno() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User aluno = (User) auth.getPrincipal();
-    
-        if (!aluno.getRole().equals(Role.ALUNO)) {
-            throw new RuntimeException("Apenas alunos podem acessar suas atividades.");
-        }
-    
-        ClassEntity sala = aluno.getSala();
-        if (sala == null) {
-            return Collections.emptyList(); // Aluno ainda não está em uma sala
-        }
-    
-        List<Activity> atividades = activityRepository.findBySalaId(sala.getId());
-    
-        return atividades.stream()
-            .map(atividade -> {
-                Presence presence = presenceRepository.findByUsuarioAndAtividade(aluno, atividade).orElse(null);
-                PresenceStatus status = (presence != null) ? presence.getStatus() : PresenceStatus.PENDENTE;
-    
-                return new StudentActivityDTO(
-                    atividade.getId(),
-                    atividade.getTitulo(),
-                    atividade.getDescricao(),
-                    atividade.getDataHora(), 
-                    status,
-                    atividade.getLocal()
-                );
-            })
-            .toList();
-    }
     @Transactional
     public void editarAtividade(Long id, ActivityDTO dto) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

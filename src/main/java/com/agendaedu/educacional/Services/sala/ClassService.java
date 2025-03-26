@@ -17,11 +17,12 @@ import com.agendaedu.educacional.Repositories.usuario.UserRepository;
 import com.agendaedu.educacional.Services.usuario.EmailService;
 import com.agendaedu.educacional.DTOs.atividade.ActivityDTO;
 import com.agendaedu.educacional.DTOs.atividade.ActivityHistoryDTO;
+import com.agendaedu.educacional.DTOs.atividade.StudentActivityDTO;
 import com.agendaedu.educacional.DTOs.aviso.NoticeExibicaoDTO;
 import com.agendaedu.educacional.DTOs.sala.ClassDTO;
 import com.agendaedu.educacional.DTOs.sala.ClassHistoryDetalhesDTO;
-import com.agendaedu.educacional.DTOs.sala.GetClassDTO;
-import com.agendaedu.educacional.DTOs.sala.GetClassDetalhadoDTO;
+import com.agendaedu.educacional.DTOs.sala.GetClassDetalhadoAlunoDTO;
+import com.agendaedu.educacional.DTOs.sala.GetClassDetalhadoProfessorDTO;
 import com.agendaedu.educacional.DTOs.usuario.SimpleUserDTO;
 
 import java.util.List;
@@ -207,7 +208,7 @@ public ClassHistoryDetalhesDTO buscarDetalhesHistorico(Long salaId) {
     // Alunos
     List<SimpleUserDTO> alunos = salaHistoricoRepository.findBySala(sala).stream()
         .filter(h -> h.getRole() == Role.ALUNO)
-        .map(h -> new SimpleUserDTO(h.getUsuario().getId(), h.getUsuario().getNomeCompleto()))
+        .map(h -> new SimpleUserDTO(h.getUsuario().getId(), h.getUsuario().getNomeCompleto(), h.getUsuario().getRole()))
         .toList();
 
     // Atividades da sala (com status real do aluno logado)
@@ -238,7 +239,7 @@ public ClassHistoryDetalhesDTO buscarDetalhesHistorico(Long salaId) {
         sala.getNome(),
         sala.getCodigoAcesso(),
         historico.get(0).getDataEncerramento(),
-        new SimpleUserDTO(professor.getId(), professor.getNomeCompleto()),
+        new SimpleUserDTO(professor.getId(), professor.getNomeCompleto(), professor.getRole()),
         alunos,
         atividades,
         avisos
@@ -302,60 +303,58 @@ public String removerAlunoDaSala(Long alunoId) {
     return "Aluno removido da sala com sucesso.";
 }
 
-
-
-    public ClassDTO getMinhaSalaAtual() {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (!user.getRole().equals(Role.ALUNO)) {
-            throw new RuntimeException("Apenas alunos possuem sala associada para esta consulta.");
-        }
-
-        ClassEntity sala = user.getSala();
-
-        if (sala == null) {
-            throw new RuntimeException("Você ainda não está vinculado a nenhuma sala.");
-        }
-
-        return new ClassDTO(
-            sala.getId(),
-            sala.getNome(),
-            sala.getCodigoAcesso()
-        );
+    public GetClassDetalhadoAlunoDTO detalharSalaDoAluno() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null || !(authentication.getPrincipal() instanceof User user)) {
+        throw new RuntimeException("Usuário não autenticado.");
     }
 
+    if (!user.getRole().equals(Role.ALUNO)) {
+        throw new RuntimeException("Apenas alunos podem acessar essa informação.");
+    }
 
-    public GetClassDTO detalharSalaDoAluno() {
-        User aluno = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    ClassEntity sala = user.getSala();
 
-        aluno = userRepository.findById(aluno.getId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    if (sala == null) {
+        throw new RuntimeException("Você ainda não está vinculado a nenhuma sala.");
+    }
 
-        ClassEntity sala = aluno.getSala();
+    // Busca todas as presenças do aluno com base na sala
+    List<StudentActivityDTO> atividadesDTO = presenceRepository
+        .findByUsuarioId(user.getId()).stream()
+        .filter(p -> p.getAtividade().getSala().getId().equals(sala.getId()))
+        .map(p -> new StudentActivityDTO(
+            p.getAtividade().getId(),
+            p.getAtividade().getTitulo(),
+            p.getAtividade().getDescricao(),
+            p.getAtividade().getLocal(),
+            p.getAtividade().getDataHora(),
+            p.getStatus()
+        ))
+        .toList();
 
-        if (sala == null) {
-            throw new RuntimeException("Você ainda não está vinculado a uma sala.");
-        }
+    List<User> alunos = userRepository.findBySalaAndRole(sala, Role.ALUNO);
+    List<Notice> avisos = noticeRepository.findBySala(sala);
 
-        sala = classRepository.findById(sala.getId())
-                .orElseThrow(() -> new RuntimeException("Sala não encontrada"));
-
-        SimpleUserDTO profDTO = new SimpleUserDTO(
+    return new GetClassDetalhadoAlunoDTO(
+        sala.getId(),
+        sala.getNome(),
+        sala.getCodigoAcesso(),
+        new SimpleUserDTO(
             sala.getProfessor().getId(),
-            sala.getProfessor().getNomeCompleto()
-        );
+            sala.getProfessor().getNomeCompleto(),
+            sala.getProfessor().getRole()
+        ),
+        alunos.stream()
+            .map(a -> new SimpleUserDTO(a.getId(), a.getNomeCompleto(), a.getRole()))
+            .toList(),
+        atividadesDTO,
+        avisos
+    );
+}
 
-        List<SimpleUserDTO> alunos = sala.getAlunos().stream()
-            .map(a -> new SimpleUserDTO(a.getId(), a.getNomeCompleto()))
-            .toList();
-
-        return new GetClassDTO(
-            sala.getId(),
-            sala.getNome(),
-            profDTO,
-            alunos
-        );
-    }
+    
+    
 
     public List<ClassDTO> getSalasDoProfessor() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -375,31 +374,37 @@ public String removerAlunoDaSala(Long alunoId) {
 }
 
 
-public GetClassDetalhadoDTO getDetalhesSalaPorId(Long salaId) {
+public GetClassDetalhadoProfessorDTO getDetalhesSalaPorId(Long salaId) {
     ClassEntity sala = classRepository.findById(salaId)
         .orElseThrow(() -> new RuntimeException("Sala não encontrada"));
 
-    List<User> alunos = userRepository.findBySalaAndRole(sala, Role.ALUNO);
+    List<SimpleUserDTO> alunos = userRepository.findBySalaAndRole(sala, Role.ALUNO)
+        .stream()
+        .map(SimpleUserDTO::new)
+        .toList();
+
+    SimpleUserDTO professor = new SimpleUserDTO(sala.getProfessor());
+
     List<Notice> avisos = noticeRepository.findBySala(sala);
 
-    List<ActivityDTO> atividadesDTO = activityRepository.findBySalaId(salaId)
+    List<ActivityDTO> atividades = activityRepository.findBySalaId(salaId)
         .stream()
         .map(a -> new ActivityDTO(
             a.getId(),
             a.getTitulo(),
             a.getDescricao(),
             a.getLocal(),
-            a.getDataHora() 
+            a.getDataHora()
         ))
         .toList();
 
-    return new GetClassDetalhadoDTO(
+    return new GetClassDetalhadoProfessorDTO(
         sala.getId(),
         sala.getNome(),
         sala.getCodigoAcesso(),
-        sala.getProfessor(),
+        professor,
         alunos,
-        atividadesDTO,
+        atividades,
         avisos
     );
 }

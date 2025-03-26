@@ -1,4 +1,4 @@
-package com.agendaedu.educacional.DTOs.autenticação;
+package com.agendaedu.educacional.DTOs.autenticacao;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

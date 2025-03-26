@@ -2,8 +2,8 @@ package com.agendaedu.educacional.Controller.usuario;
 
 import lombok.RequiredArgsConstructor;
 
-import com.agendaedu.educacional.DTOs.autenticação.LoginRequestDTO;
-import com.agendaedu.educacional.DTOs.autenticação.LoginResponseDTO;
+import com.agendaedu.educacional.DTOs.autenticacao.LoginRequestDTO;
+import com.agendaedu.educacional.DTOs.autenticacao.LoginResponseDTO;
 import com.agendaedu.educacional.DTOs.usuario.NewUserDTO;
 import com.agendaedu.educacional.DTOs.usuario.UpdateEmailDTO;
 import com.agendaedu.educacional.DTOs.usuario.UpdatePasswordDTO;

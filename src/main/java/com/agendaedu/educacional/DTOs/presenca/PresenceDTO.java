@@ -1,4 +1,4 @@
-package com.agendaedu.educacional.DTOs.presença;
+package com.agendaedu.educacional.DTOs.presenca;
 
 public record PresenceDTO(
         Long userId,

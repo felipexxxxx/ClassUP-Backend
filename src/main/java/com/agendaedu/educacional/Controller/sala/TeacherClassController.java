@@ -5,20 +5,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.agendaedu.educacional.DTOs.atividade.ActivityDTO;
-import com.agendaedu.educacional.DTOs.atividade.ActivityResumoDTO;
-import com.agendaedu.educacional.DTOs.aviso.NoticeDTO;
-import com.agendaedu.educacional.DTOs.sala.ClassDTO;
-import com.agendaedu.educacional.DTOs.sala.GetClassDetalhadoDTO;
-import com.agendaedu.educacional.Entities.atividade.Activity;
-import com.agendaedu.educacional.Entities.aviso.Notice;
-import com.agendaedu.educacional.Entities.sala.ClassEntity;
-import com.agendaedu.educacional.Services.atividade.ActivityService;
-import com.agendaedu.educacional.Services.aviso.NoticeService;
-import com.agendaedu.educacional.Services.sala.ClassService;
+import com.agendaedu.educacional.DTOs.atividade.*;
+import com.agendaedu.educacional.DTOs.aviso.*;
+import com.agendaedu.educacional.DTOs.sala.*;
+import com.agendaedu.educacional.Entities.atividade.*;
+import com.agendaedu.educacional.Entities.aviso.*;
+import com.agendaedu.educacional.Entities.sala.*;
+import com.agendaedu.educacional.Services.atividade.*;
+import com.agendaedu.educacional.Services.aviso.*;
+import com.agendaedu.educacional.Services.sala.*;
 
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/professor/sala")
@@ -40,7 +37,7 @@ public class TeacherClassController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetClassDetalhadoDTO> getDetalhesPorId(@PathVariable Long id) {
+    public ResponseEntity<GetClassDetalhadoProfessorDTO> getDetalhesPorId(@PathVariable Long id) {
         return ResponseEntity.ok(classService.getDetalhesSalaPorId(id));
     }
 
