@@ -1,5 +1,4 @@
 package com.agendaedu.educacional.Repositories;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.agendaedu.educacional.Entities.User;
@@ -13,7 +12,4 @@ public interface ClassRepository extends JpaRepository<ClassEntity, Long> {
     Optional<ClassEntity> findByCodigoAcesso(String codigoAcesso);
     boolean existsByNomeAndProfessor(String nome, User professor);
     List<ClassEntity> findByProfessor(User professor);
-   @EntityGraph(attributePaths = {"professor", "alunos"})
-    Optional<ClassEntity> findById(Long id);
-
 }

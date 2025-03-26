@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "notices") // ← garante que o nome da tabela seja "notice"
+@Table(name = "notices") 
 @Data
 @Builder
 @NoArgsConstructor
@@ -24,10 +24,10 @@ public class Notice {
     private String mensagem;
 
     @Column(name = "enviada_em")
-    private LocalDateTime enviadaEm; // ← nome em camelCase para o Java
+    private LocalDateTime enviadaEm; 
 
     @ManyToOne
-    @JoinColumn(name = "sala_id") // ← coluna do banco que faz a FK com a sala
+    @JoinColumn(name = "sala_id") 
     @JsonIgnore 
     private ClassEntity sala;
 }

@@ -23,12 +23,11 @@ public class ClassEntity {
     @Column(name = "codigo_acesso", nullable = false, unique = true)
     private String codigoAcesso;
 
-    // Um professor pode ter várias salas (1:N)
+    // Um professor pode ter várias salas 
     @ManyToOne
     @JoinColumn(name = "professor_id")
     private User professor;
 
-    // Opcional: se quiser carregar alunos via relacionamento reverso
     @OneToMany(mappedBy = "sala")
     private List<User> alunos;
 }

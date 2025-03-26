@@ -82,7 +82,6 @@ public class ClassService {
         throw new RuntimeException("Você já está em uma sala. Só é permitido ingressar em uma.");
     }
 
-    // Associa aluno à sala
     user.setSala(classEntity);
     userRepository.save(user);
 
@@ -230,7 +229,6 @@ public ClassHistoryDetalhesDTO buscarDetalhesHistorico(Long salaId) {
         })
         .toList();
 
-    // Avisos
     List<NoticeExibicaoDTO> avisos = noticeRepository.findBySala(sala).stream()
         .map(n -> new NoticeExibicaoDTO(n.getId(), n.getTitulo(), n.getMensagem(), n.getEnviadaEm()))
         .toList();
@@ -261,7 +259,6 @@ public String removerAlunoDaSala(Long alunoId) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     User professor = (User) auth.getPrincipal();
 
-    // Valida se é professor
     if (!professor.getRole().equals(Role.PROFESSOR)) {
         throw new RuntimeException("Apenas professores podem remover alunos.");
     }
@@ -330,7 +327,6 @@ public String removerAlunoDaSala(Long alunoId) {
     public GetClassDTO detalharSalaDoAluno() {
         User aluno = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        // Recarrega o aluno completo do banco com a sala associada
         aluno = userRepository.findById(aluno.getId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
@@ -340,7 +336,6 @@ public String removerAlunoDaSala(Long alunoId) {
             throw new RuntimeException("Você ainda não está vinculado a uma sala.");
         }
 
-        // Busca a sala com alunos e professor (usando EntityGraph ou fetch join se quiser)
         sala = classRepository.findById(sala.getId())
                 .orElseThrow(() -> new RuntimeException("Sala não encontrada"));
 
@@ -386,7 +381,6 @@ public GetClassDetalhadoDTO getDetalhesSalaPorId(Long salaId) {
     List<User> alunos = userRepository.findBySalaAndRole(sala, Role.ALUNO);
     List<Notice> avisos = noticeRepository.findBySala(sala);
 
-    // Adaptando atividades → ActivityDTO
     List<ActivityDTO> atividadesDTO = activityRepository.findBySalaId(salaId)
         .stream()
         .map(a -> new ActivityDTO(

@@ -43,7 +43,7 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    // Relacionamento com sala (aluno participa de uma sala)
+    // aluno participa de uma sala
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "sala_id")

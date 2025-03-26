@@ -10,6 +10,7 @@ import com.agendaedu.educacional.Repositories.ActivityRepository;
 import com.agendaedu.educacional.Repositories.UserRepository;
 import com.agendaedu.educacional.Repositories.PresenceRepository;
 import jakarta.transaction.Transactional;
+import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import java.util.Collections;   
 import org.springframework.security.core.Authentication;
@@ -33,41 +34,48 @@ public class ActivityService {
     public Activity criarAtividade(Activity activity) {
         Activity savedActivity = activityRepository.save(activity);
 
-    // Pega todos os alunos da sala
         List<User> alunos = userRepository.findBySalaAndRole(activity.getSala(), Role.ALUNO);
 
-    for (User aluno : alunos) {
+        // Formatter para data e hora no formato desejado
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM 'às' HH:mm");
 
-        // Cria presença com status PENDENTE
-        Presence presence = Presence.builder()
-                .atividade(savedActivity)
-                .usuario(aluno)
-                .status(PresenceStatus.PENDENTE)
-                .build();
-        presenceRepository.save(presence);
+        String dataFormatada = activity.getDataHora().format(formatter);
 
-        // Envia e-mail (opcional)
-        String emailBody = """
-            Olá %s,
+        for (User aluno : alunos) {
+            Presence presence = Presence.builder()
+                    .atividade(savedActivity)
+                    .usuario(aluno)
+                    .status(PresenceStatus.PENDENTE)
+                    .build();
+            presenceRepository.save(presence);
 
-            Uma nova atividade foi criada:
+            String emailBody = """
+                Olá %s,
 
-            Título: %s
-            Descrição: %s
-            Local: %s
-            Data e Hora: %s
+                Uma nova atividade foi criada:
 
-            Confirme sua presença no portal😊.
+                Título: %s
+                Descrição: %s
+                Local: %s
+                Data e Hora: %s
 
-            Atenciosamente,
-            ClassUP
-            """.formatted(aluno.getNomeCompleto(), activity.getTitulo(), activity.getDescricao(), activity.getLocal(), activity.getDataHora());
+                Confirme sua presença no portal😊.
 
-        emailService.sendEmail(aluno.getEmail(), "Nova Atividade: " + activity.getTitulo(), emailBody);
+                Atenciosamente,
+                ClassUP
+                """.formatted(
+                    aluno.getNomeCompleto(),
+                    activity.getTitulo(),
+                    activity.getDescricao(),
+                    activity.getLocal(),
+                    dataFormatada
+            );
+
+            emailService.sendEmail(aluno.getEmail(), "Nova Atividade: " + activity.getTitulo(), emailBody);
+        }
+
+        return savedActivity;
     }
-
-    return savedActivity;
-}
 
 
 

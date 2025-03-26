@@ -20,17 +20,15 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user;
 
         if (login.contains("@")) {
-            // Login por email
             user = userRepository.findByEmail(login)
                     .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com email: " + login));
         } else {
-            // Login por matrícula
             user = userRepository.findByMatricula(login)
                     .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com matrícula: " + login));
         }
 
         return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail()) // mesmo que tenha logado por matrícula, o username será o email
+                .username(user.getEmail()) 
                 .password(user.getSenha())
                 .roles(user.getRole().name())
                 .build();

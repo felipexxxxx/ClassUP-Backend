@@ -23,14 +23,13 @@ public class UserController {
 
     private final UserService userService;
 
-       // ✅ Criar novo usuário com feedback de sucesso
        @PostMapping
         public ResponseEntity<NewUserDTO> registrar(@RequestBody User user) {
             NewUserDTO response = userService.registrar(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-}
+        }
    
-       // ✅ Login (Corrigido)
+       
        @PostMapping("/login")
        public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO dto) {
            return ResponseEntity.ok(userService.login(dto));
@@ -40,7 +39,8 @@ public class UserController {
         public ResponseEntity<String> logout() {
             userService.logout();
             return ResponseEntity.ok("Logout realizado com sucesso!");
-    }
+       }
+
        @GetMapping
         public ResponseEntity<UserInfoDTO> getPerfil() {
             return ResponseEntity.ok(userService.getPerfil());
@@ -57,7 +57,7 @@ public class UserController {
         }
 
    
-       // ✅ Atualiza atividade da sessão (usado pelo frontend)
+       
     //    @PostMapping("/ping")
     //    public ResponseEntity<Void> heartbeat(@RequestHeader("Authorization") String token) {
     //        token = token.replace("Bearer ", "");

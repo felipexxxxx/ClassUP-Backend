@@ -13,7 +13,7 @@ public record GetClassDetalhadoDTO(
     String codigoAcesso,
     User professor,
     List<User> alunos,
-    List<ActivityDTO> atividades, // <-- aqui mudou!
-    List<Notice> avisos        // <-- aqui também
+    List<ActivityDTO> atividades, 
+    List<Notice> avisos        
 ) {}
 

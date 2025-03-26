@@ -18,7 +18,7 @@ public class UserSession {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne // Alterei de OneToOne para ManyToOne (um usuário pode ter várias sessões)
+    @ManyToOne // um usuário pode ter várias sessões)
     @JoinColumn(name = "usuario_id", nullable = false)
     private User user;
 
