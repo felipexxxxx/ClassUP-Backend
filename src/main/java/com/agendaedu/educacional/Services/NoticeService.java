@@ -101,6 +101,40 @@ public class NoticeService {
     
         throw new RuntimeException("Role inválido.");
     }
+
+    @Transactional
+    public void editarAviso(Long id, Notice avisoAtualizado) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User professor = (User) auth.getPrincipal();
+
+        Notice avisoExistente = noticeRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Aviso não encontrado"));
+
+        if (!avisoExistente.getSala().getProfessor().getId().equals(professor.getId())) {
+            throw new RuntimeException("Você não tem permissão para editar este aviso.");
+        }
+
+        avisoExistente.setTitulo(avisoAtualizado.getTitulo());
+        avisoExistente.setMensagem(avisoAtualizado.getMensagem());
+
+        noticeRepository.save(avisoExistente);
+    }
+
+    @Transactional
+    public void excluirAviso(Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User professor = (User) auth.getPrincipal();
+
+        Notice aviso = noticeRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Aviso não encontrado"));
+
+        if (!aviso.getSala().getProfessor().getId().equals(professor.getId())) {
+            throw new RuntimeException("Você não tem permissão para excluir este aviso.");
+        }
+
+        noticeRepository.delete(aviso);
+    }
+
     
 }
     

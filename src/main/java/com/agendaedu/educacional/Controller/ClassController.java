@@ -8,7 +8,6 @@ import com.agendaedu.educacional.DTOs.JoinClassDTO;
 import com.agendaedu.educacional.DTOs.NoticeDTO;
 import com.agendaedu.educacional.DTOs.ProfessorSalaDTO;
 import com.agendaedu.educacional.Entities.ClassEntity;
-import com.agendaedu.educacional.Repositories.ActivityRepository;
 import com.agendaedu.educacional.Entities.ClassHistoryEntity;
 import com.agendaedu.educacional.Entities.Notice;
 import com.agendaedu.educacional.Services.ClassService;
@@ -33,7 +32,6 @@ public class ClassController {
     private final ActivityService activityService;
     private final PresenceService presenceService;
     private final NoticeService noticeService;
-    private final ActivityRepository activityRepository;
 
     @PostMapping
     public ResponseEntity<ClassEntity> createClass(@RequestBody ClassEntity classEntity) {
@@ -151,6 +149,19 @@ public class ClassController {
     public ResponseEntity<List<Notice>> getNotices() {
         return ResponseEntity.ok(noticeService.getNoticesByUserClass());
     }
+
+    @PutMapping("/avisos/{id}")
+    public ResponseEntity<Void> editarAviso(@PathVariable Long id, @RequestBody Notice avisoAtualizado) {
+        noticeService.editarAviso(id, avisoAtualizado);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/avisos/{id}")
+    public ResponseEntity<Void> excluirAviso(@PathVariable Long id) {
+        noticeService.excluirAviso(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
 
 

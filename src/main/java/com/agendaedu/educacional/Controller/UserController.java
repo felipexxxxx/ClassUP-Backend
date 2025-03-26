@@ -1,8 +1,10 @@
 package com.agendaedu.educacional.Controller;
 
 import com.agendaedu.educacional.Entities.User;
-import com.agendaedu.educacional.Repositories.SessionRepository;
 import com.agendaedu.educacional.Services.UserService;
+
+import lombok.RequiredArgsConstructor;
+
 import com.agendaedu.educacional.DTOs.LoginRequestDTO;
 import com.agendaedu.educacional.DTOs.LoginResponseDTO;
 import com.agendaedu.educacional.DTOs.NewUserDTO;
@@ -16,15 +18,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-    private final SessionRepository sessionRepository;
-
-    public UserController(UserService userService, SessionRepository sessionRepository) {
-        this.userService = userService;
-        this.sessionRepository = sessionRepository;
-    }
 
        // ✅ Criar novo usuário com feedback de sucesso
        @PostMapping
