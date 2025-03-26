@@ -39,8 +39,6 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/user").permitAll()
                 .requestMatchers(HttpMethod.POST, "/user/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/user/logout").authenticated()
-                .requestMatchers("/user/**").authenticated()
-                .requestMatchers("/notificacao/**").authenticated()
                 .requestMatchers("/aluno/**").hasRole("ALUNO")
                 .requestMatchers("/professor/**").hasRole("PROFESSOR")
                 .requestMatchers("/sala/**").authenticated()

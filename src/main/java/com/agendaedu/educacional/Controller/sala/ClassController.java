@@ -1,8 +1,8 @@
 package com.agendaedu.educacional.Controller.sala;
 
-import com.agendaedu.educacional.DTOs.sala.ClassHistoryDetalhesDTO;
-import com.agendaedu.educacional.Entities.sala.ClassHistoryEntity;
-import com.agendaedu.educacional.Services.sala.ClassService;
+import com.agendaedu.educacional.DTOs.sala.*;
+import com.agendaedu.educacional.Entities.sala.*;
+import com.agendaedu.educacional.Services.sala.*;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

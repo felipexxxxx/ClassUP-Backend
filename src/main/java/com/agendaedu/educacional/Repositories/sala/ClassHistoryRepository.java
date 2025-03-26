@@ -2,10 +2,9 @@ package com.agendaedu.educacional.Repositories.sala;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.agendaedu.educacional.Entities.sala.ClassEntity;
-import com.agendaedu.educacional.Entities.sala.ClassHistoryEntity;
-import com.agendaedu.educacional.Entities.usuario.User;
-import com.agendaedu.educacional.Enums.Role;
+import com.agendaedu.educacional.Entities.sala.*;
+import com.agendaedu.educacional.Entities.usuario.*;
+import com.agendaedu.educacional.Enums.*;
 
 import java.util.List;
 

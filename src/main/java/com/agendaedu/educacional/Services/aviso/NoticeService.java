@@ -1,13 +1,13 @@
 package com.agendaedu.educacional.Services.aviso;
 
-import com.agendaedu.educacional.DTOs.aviso.NoticeDTO;
-import com.agendaedu.educacional.Entities.aviso.Notice;
-import com.agendaedu.educacional.Entities.sala.ClassEntity;
-import com.agendaedu.educacional.Entities.usuario.User;
-import com.agendaedu.educacional.Enums.Role;
-import com.agendaedu.educacional.Repositories.aviso.NoticeRepository;
-import com.agendaedu.educacional.Repositories.sala.ClassRepository;
-import com.agendaedu.educacional.Repositories.usuario.UserRepository;
+import com.agendaedu.educacional.DTOs.aviso.*;
+import com.agendaedu.educacional.Entities.aviso.*;
+import com.agendaedu.educacional.Entities.sala.*;
+import com.agendaedu.educacional.Entities.usuario.*;
+import com.agendaedu.educacional.Enums.*;
+import com.agendaedu.educacional.Repositories.aviso.*;
+import com.agendaedu.educacional.Repositories.sala.*;
+import com.agendaedu.educacional.Repositories.usuario.*;
 import com.agendaedu.educacional.Services.usuario.EmailService;
 
 import lombok.RequiredArgsConstructor;

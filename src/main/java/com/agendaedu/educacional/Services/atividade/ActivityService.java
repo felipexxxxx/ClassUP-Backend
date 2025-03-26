@@ -1,15 +1,13 @@
 package com.agendaedu.educacional.Services.atividade;
 
-import com.agendaedu.educacional.DTOs.atividade.ActivityDTO;
-import com.agendaedu.educacional.DTOs.atividade.ActivityResumoDTO;
-import com.agendaedu.educacional.Entities.atividade.Activity;
-import com.agendaedu.educacional.Entities.presenca.Presence;
-import com.agendaedu.educacional.Entities.usuario.User;
-import com.agendaedu.educacional.Enums.PresenceStatus;
-import com.agendaedu.educacional.Enums.Role;
-import com.agendaedu.educacional.Repositories.atividade.ActivityRepository;
-import com.agendaedu.educacional.Repositories.presenca.PresenceRepository;
-import com.agendaedu.educacional.Repositories.usuario.UserRepository;
+import com.agendaedu.educacional.DTOs.atividade.*;
+import com.agendaedu.educacional.Entities.atividade.*;
+import com.agendaedu.educacional.Entities.presenca.*;
+import com.agendaedu.educacional.Entities.usuario.*;
+import com.agendaedu.educacional.Enums.*;
+import com.agendaedu.educacional.Repositories.atividade.*;
+import com.agendaedu.educacional.Repositories.presenca.*;
+import com.agendaedu.educacional.Repositories.usuario.*;
 import com.agendaedu.educacional.Services.usuario.EmailService;
 
 import jakarta.transaction.Transactional;
@@ -86,7 +84,6 @@ public class ActivityService {
         Activity atividade = activityRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
 
-        // Verifica se o professor atual é o dono da sala vinculada à atividade
         if (!atividade.getSala().getProfessor().getId().equals(professor.getId())) {
             throw new RuntimeException("Você não tem permissão para editar esta atividade.");
         }

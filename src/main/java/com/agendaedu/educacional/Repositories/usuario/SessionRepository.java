@@ -1,7 +1,6 @@
 package com.agendaedu.educacional.Repositories.usuario;
 
-import com.agendaedu.educacional.Entities.usuario.User;
-import com.agendaedu.educacional.Entities.usuario.UserSession;
+import com.agendaedu.educacional.Entities.usuario.*;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -1,9 +1,9 @@
 package com.agendaedu.educacional.Repositories.presenca;
 
-import com.agendaedu.educacional.Entities.atividade.Activity;
-import com.agendaedu.educacional.Entities.presenca.Presence;
-import com.agendaedu.educacional.Entities.usuario.User;
-import com.agendaedu.educacional.Enums.PresenceStatus;
+import com.agendaedu.educacional.Entities.atividade.*;
+import com.agendaedu.educacional.Entities.presenca.*;
+import com.agendaedu.educacional.Entities.usuario.*;
+import com.agendaedu.educacional.Enums.*;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;

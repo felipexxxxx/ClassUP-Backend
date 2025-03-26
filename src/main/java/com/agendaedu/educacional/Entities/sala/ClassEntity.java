@@ -4,7 +4,7 @@ import lombok.*;
 
 import java.util.List;
 
-import com.agendaedu.educacional.Entities.usuario.User;
+import com.agendaedu.educacional.Entities.usuario.*;
 
 @Entity
 @Table(name = "classes")

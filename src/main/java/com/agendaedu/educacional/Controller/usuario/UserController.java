@@ -2,14 +2,10 @@ package com.agendaedu.educacional.Controller.usuario;
 
 import lombok.RequiredArgsConstructor;
 
-import com.agendaedu.educacional.DTOs.autenticacao.LoginRequestDTO;
-import com.agendaedu.educacional.DTOs.autenticacao.LoginResponseDTO;
-import com.agendaedu.educacional.DTOs.usuario.NewUserDTO;
-import com.agendaedu.educacional.DTOs.usuario.UpdateEmailDTO;
-import com.agendaedu.educacional.DTOs.usuario.UpdatePasswordDTO;
-import com.agendaedu.educacional.DTOs.usuario.UserInfoDTO;
-import com.agendaedu.educacional.Entities.usuario.User;
-import com.agendaedu.educacional.Services.usuario.UserService;
+import com.agendaedu.educacional.DTOs.autenticacao.*;
+import com.agendaedu.educacional.DTOs.usuario.*;
+import com.agendaedu.educacional.Entities.usuario.*;
+import com.agendaedu.educacional.Services.usuario.*;
 
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -54,18 +50,4 @@ public class UserController {
         public ResponseEntity<String> atualizarSenha(@RequestBody UpdatePasswordDTO dto) {
             return ResponseEntity.ok(userService.atualizarSenha(dto));
         }
-
-   
-       
-    //    @PostMapping("/ping")
-    //    public ResponseEntity<Void> heartbeat(@RequestHeader("Authorization") String token) {
-    //        token = token.replace("Bearer ", "");
-    //        var session = sessionRepository.findByToken(token)
-    //                .orElseThrow(() -> new UserNotFoundException("Sessão inválida"));
-   
-    //        session.setLastActivity(LocalDateTime.now());
-    //        sessionRepository.save(session);
-   
-    //        return ResponseEntity.ok().build();
-    //    }
    }

@@ -5,9 +5,9 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.agendaedu.educacional.DTOs.atividade.ActivityHistoryDTO;
-import com.agendaedu.educacional.DTOs.aviso.NoticeExibicaoDTO;
-import com.agendaedu.educacional.DTOs.usuario.SimpleUserDTO;
+import com.agendaedu.educacional.DTOs.atividade.*;
+import com.agendaedu.educacional.DTOs.aviso.*;
+import com.agendaedu.educacional.DTOs.usuario.*;
 
 @Getter
 @Setter

@@ -27,7 +27,7 @@ public class TokenService {
     public String generateToken(User user) {
         return JWT.create()
                 .withIssuer("AgendaEdu")
-                .withSubject(user.getEmail()) // ou matrícula se preferir
+                .withSubject(user.getEmail()) 
                 .withSubject(user.getMatricula())
                 .withClaim("id", user.getId())
                 .withClaim("role", user.getRole().name())
@@ -44,7 +44,7 @@ public class TokenService {
                     .verify(token)
                     .getSubject();
 
-            // Busca por email ou matrícula
+            // email ou matrícula
             Optional<User> optionalUser = userRepository.findByEmail(login);
             if (optionalUser.isEmpty()) {
                 optionalUser = userRepository.findByMatricula(login);

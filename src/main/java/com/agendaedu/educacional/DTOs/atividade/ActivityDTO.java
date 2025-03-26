@@ -1,4 +1,3 @@
-// ActivityDTO.java
 package com.agendaedu.educacional.DTOs.atividade;
 
 import java.time.LocalDateTime;

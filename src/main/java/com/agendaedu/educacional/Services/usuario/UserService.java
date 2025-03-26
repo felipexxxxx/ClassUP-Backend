@@ -1,16 +1,10 @@
 package com.agendaedu.educacional.Services.usuario;
 
-import com.agendaedu.educacional.DTOs.autenticacao.LoginRequestDTO;
-import com.agendaedu.educacional.DTOs.autenticacao.LoginResponseDTO;
-import com.agendaedu.educacional.DTOs.usuario.NewUserDTO;
-import com.agendaedu.educacional.DTOs.usuario.UpdateEmailDTO;
-import com.agendaedu.educacional.DTOs.usuario.UpdatePasswordDTO;
-import com.agendaedu.educacional.DTOs.usuario.UserInfoDTO;
-import com.agendaedu.educacional.Entities.usuario.User;
-import com.agendaedu.educacional.Entities.usuario.UserSession;
+import com.agendaedu.educacional.DTOs.autenticacao.*;
+import com.agendaedu.educacional.DTOs.usuario.*;
+import com.agendaedu.educacional.Entities.usuario.*;
 import com.agendaedu.educacional.Exceptions.*;
-import com.agendaedu.educacional.Repositories.usuario.SessionRepository;
-import com.agendaedu.educacional.Repositories.usuario.UserRepository;
+import com.agendaedu.educacional.Repositories.usuario.*;
 import com.agendaedu.educacional.Services.autenticacao.TokenService;
 
 import lombok.RequiredArgsConstructor;
@@ -81,10 +75,9 @@ public class UserService {
         throw new InvalidCredentialsException();
     }
 
-    // Gera o token JWT
     String token = tokenService.generateToken(user);
 
-    // Cria uma nova sessão 
+    // Cria uma sessão (vai p banco) 
     UserSession session = UserSession.builder()
         .user(user)
         .entrou(LocalDateTime.now())

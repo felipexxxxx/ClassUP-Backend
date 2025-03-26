@@ -5,8 +5,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-import com.agendaedu.educacional.Entities.usuario.User;
-import com.agendaedu.educacional.Enums.Role;
+import com.agendaedu.educacional.Entities.usuario.*;
+import com.agendaedu.educacional.Enums.*;
 
 @Entity
 @Table(name = "classes_history")

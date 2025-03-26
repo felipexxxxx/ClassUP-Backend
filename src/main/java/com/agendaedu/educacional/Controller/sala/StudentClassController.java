@@ -4,10 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.agendaedu.educacional.DTOs.sala.GetClassDetalhadoAlunoDTO;
-import com.agendaedu.educacional.DTOs.sala.JoinClassDTO;
-import com.agendaedu.educacional.Services.presenca.PresenceService;
-import com.agendaedu.educacional.Services.sala.ClassService;
+import com.agendaedu.educacional.DTOs.sala.*;
+import com.agendaedu.educacional.Services.presenca.*;
+import com.agendaedu.educacional.Services.sala.*;
 
 @RestController
 @RequestMapping("/aluno/sala")
