@@ -1,8 +1,9 @@
 package com.agendaedu.educacional.Config;
 
 
-import com.agendaedu.educacional.Entities.User;
-import com.agendaedu.educacional.Repositories.UserRepository;
+import com.agendaedu.educacional.Entities.usuario.User;
+import com.agendaedu.educacional.Repositories.usuario.UserRepository;
+
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
