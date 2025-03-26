@@ -27,6 +27,7 @@ import java.util.List;
 import org.springframework.security.core.Authentication;
 
 import java.time.LocalDateTime;
+import java.util.Random;
 import java.util.UUID;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -145,6 +146,7 @@ public class ClassService {
                 }
 
                 aluno.setSala(null);
+                
 
                 // 3. Envia e-mail ao aluno
                 String corpoEmail = """
@@ -172,7 +174,7 @@ public class ClassService {
 
             // 4. Desvincula o professor da sala
             sala.setProfessor(null);
-
+            sala.setCodigoAcesso(CodigoAcessoUtil.gerarCodigoAcesso());
             // 5. Salva atualizações no banco
             userRepository.saveAll(alunos);
             classRepository.save(sala);
@@ -255,36 +257,54 @@ public ClassHistoryDetalhesDTO buscarDetalhesHistorico(Long salaId) {
             return salaHistoricoRepository.findByUsuario(user);
 }
 
-    @Transactional
-    public String removerAlunoDaSala(Long alunoId) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User professor = (User) auth.getPrincipal();
+@Transactional
+public String removerAlunoDaSala(Long alunoId) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    User professor = (User) auth.getPrincipal();
 
     // Valida se é professor
-        if (!professor.getRole().equals(Role.PROFESSOR)) {
-            throw new RuntimeException("Apenas professores podem remover alunos.");
-        }
+    if (!professor.getRole().equals(Role.PROFESSOR)) {
+        throw new RuntimeException("Apenas professores podem remover alunos.");
+    }
 
-        // Busca o aluno
-        User aluno = userRepository.findById(alunoId)
-            .orElseThrow(() -> new RuntimeException("Aluno não encontrado."));
+    // Busca o aluno
+    User aluno = userRepository.findById(alunoId)
+        .orElseThrow(() -> new RuntimeException("Aluno não encontrado."));
 
-        // Valida se o aluno está em uma sala
-        if (aluno.getSala() == null) {
-            throw new RuntimeException("Este aluno não está em nenhuma sala.");
-        }
+    // Valida se o aluno está em uma sala
+    if (aluno.getSala() == null) {
+        throw new RuntimeException("Este aluno não está em nenhuma sala.");
+    }
 
-        // Verifica se o professor é o dono da sala
-        if (!aluno.getSala().getProfessor().getId().equals(professor.getId())) {
-            throw new RuntimeException("Você não é o professor responsável por esta sala.");
-        }
+    // Verifica se o professor é o dono da sala
+    if (!aluno.getSala().getProfessor().getId().equals(professor.getId())) {
+        throw new RuntimeException("Você não é o professor responsável por esta sala.");
+    }
 
-        // Remove aluno da sala
-        aluno.setSala(null);
-        userRepository.save(aluno);
+    String nomeSala = aluno.getSala().getNome();
 
-        return "Aluno removido da sala com sucesso.";
+    // Remove aluno da sala
+    aluno.setSala(null);
+    userRepository.save(aluno);
+
+    // Envia e-mail ao aluno
+    String assunto = "Remoção da sala";
+    String mensagem = """
+        Olá %s,
+
+        Informamos que você foi removido da sala "%s" pelo professor %s.
+
+        Caso tenha dúvidas, entre em contato com o professor.
+
+        Atenciosamente,
+        ClassUP
+        """.formatted(aluno.getNomeCompleto(), nomeSala, professor.getNomeCompleto());
+
+    emailService.sendEmail(aluno.getEmail(), assunto, mensagem);
+
+    return "Aluno removido da sala com sucesso.";
 }
+
 
 
     public StudentClassDTO getMinhaSalaAtual() {
@@ -391,7 +411,19 @@ public GetClassDetalhadoDTO getDetalhesSalaPorId(Long salaId) {
 }
 
 
+public class CodigoAcessoUtil {
+    private static final String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final int TAMANHO = 10;
 
+    public static String gerarCodigoAcesso() {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder(TAMANHO);
+        for (int i = 0; i < TAMANHO; i++) {
+            sb.append(CHARS.charAt(random.nextInt(CHARS.length())));
+        }
+        return sb.toString();
+    }
+}
 
 
 

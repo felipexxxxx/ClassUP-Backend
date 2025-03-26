@@ -1,6 +1,7 @@
 package com.agendaedu.educacional.Controller;
 
 import com.agendaedu.educacional.DTOs.ActivityDTO;
+import com.agendaedu.educacional.DTOs.ActivityResumoDTO;
 import com.agendaedu.educacional.DTOs.ClassHistoryDetalhesDTO;
 import com.agendaedu.educacional.DTOs.GetClassDTO;
 import com.agendaedu.educacional.DTOs.GetClassDetalhadoDTO;
@@ -16,6 +17,7 @@ import com.agendaedu.educacional.Services.ActivityService;
 import com.agendaedu.educacional.Services.PresenceService;
 import com.agendaedu.educacional.DTOs.StudentActivityDTO;
 import com.agendaedu.educacional.DTOs.StudentClassDTO;
+import com.agendaedu.educacional.DTOs.ActivityResumoDTO;
 import com.agendaedu.educacional.Entities.Activity;
 
 import lombok.RequiredArgsConstructor;
@@ -100,17 +102,15 @@ public class ClassController {
     public ResponseEntity<List<StudentActivityDTO>> listarMinhasAtividades() {
         return ResponseEntity.ok(activityService.listarAtividadesDoAluno());
     }
-    // Listar atividades da sala(PROFESSOR)
-    @GetMapping("/atividades/sala/{salaId}")
-    public ResponseEntity<List<ActivityDTO>> getActivitiesBySala(@PathVariable Long salaId) {
-        return ResponseEntity.ok(activityService.getActivitiesBySala(salaId));
+
+    @GetMapping("/atividades/{atividadeId}/resumo")
+    public ResponseEntity<ActivityResumoDTO> getResumoAtividade(@PathVariable Long atividadeId) {
+        return ResponseEntity.ok(activityService.getResumoAtividade(atividadeId));
     }
 
-    // Atividade por ID
-    @GetMapping("/atividades/{id}")
-    public ResponseEntity<Activity> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(activityService.getById(id));
-    }
+    
+
+
 
     @DeleteMapping("/atividades/{id}")
     public ResponseEntity<Void> deletarAtividade(@PathVariable Long id) {

@@ -1,11 +1,13 @@
 package com.agendaedu.educacional.Services;
 
 import com.agendaedu.educacional.DTOs.ActivityDTO;
+import com.agendaedu.educacional.DTOs.ActivityResumoDTO;
 import com.agendaedu.educacional.DTOs.StudentActivityDTO;
 import com.agendaedu.educacional.Entities.*;
 import com.agendaedu.educacional.Repositories.ActivityRepository;
 import com.agendaedu.educacional.Repositories.NotificationRepository;
 import com.agendaedu.educacional.Repositories.UserRepository;
+import com.agendaedu.educacional.Repositories.ClassRepository;
 import com.agendaedu.educacional.Repositories.PresenceRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class ActivityService {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
     private final EmailService emailService; 
+    private final ClassRepository classRepository;
 
     @Transactional
     public Activity createActivity(Activity activity) {
@@ -162,6 +165,33 @@ public class ActivityService {
 
         activityRepository.delete(atividade);
 }
+
+public ActivityResumoDTO getResumoAtividade(Long atividadeId) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    User professor = (User) auth.getPrincipal();
+
+    Activity atividade = activityRepository.findById(atividadeId)
+        .orElseThrow(() -> new RuntimeException("Atividade não encontrada."));
+
+
+    if (atividade.getSala().getProfessor() == null || 
+        !atividade.getSala().getProfessor().getId().equals(professor.getId())) {
+        throw new RuntimeException("Você não tem permissão para visualizar essa atividade.");
+    }
+
+    int confirmados = presenceRepository.countByAtividadeAndStatus(atividade, PresenceStatus.CONFIRMADO);
+    
+    return new ActivityResumoDTO(
+        atividade.getId(),
+        atividade.getTitulo(),
+        atividade.getDescricao(),
+        atividade.getDataHora(),
+        atividade.getLocal(),
+        confirmados
+    );
+}
+
+
 
 
 }
