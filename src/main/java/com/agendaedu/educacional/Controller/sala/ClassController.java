@@ -23,7 +23,7 @@ public class ClassController {
 
     @GetMapping("/historico/{id}")
     public ResponseEntity<ClassHistoryDetalhesDTO> verDetalhesHistorico(@PathVariable Long id) {
-        return ResponseEntity.ok(classService.buscarDetalhesHistorico(id));
+        return ResponseEntity.ok(classService.verSalaHistorico(id));
     }
 
     

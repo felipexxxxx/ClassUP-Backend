@@ -78,18 +78,6 @@ public class ActivityService {
         return savedActivity;
     }
 
-
-    public List<ActivityDTO> getActivitiesBySala(Long salaId) {
-        List<Activity> atividades = activityRepository.findBySalaId(salaId);
-        return atividades.stream().map(a -> new ActivityDTO(
-                a.getId(),
-                a.getTitulo(),
-                a.getDescricao(),
-                a.getLocal(),
-                a.getDataHora()
-    )).toList();
-}
-
     @Transactional
     public void editarAtividade(Long id, ActivityDTO dto) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

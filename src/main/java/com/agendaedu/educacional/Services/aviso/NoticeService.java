@@ -29,7 +29,7 @@ public class NoticeService {
     private final ClassRepository classRepository;
 
     @Transactional
-    public String createNotice(NoticeDTO dto) {
+    public String criarAviso(NoticeDTO dto) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User professor = (User) auth.getPrincipal();
     

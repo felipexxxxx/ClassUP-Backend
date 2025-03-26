@@ -15,12 +15,11 @@ import com.agendaedu.educacional.Services.sala.ClassService;
 public class StudentClassController {
 
     private final ClassService classService;
-
     private final PresenceService presenceService;
 
     @PostMapping("/entrar")
-    public ResponseEntity<String> joinClass(@RequestBody JoinClassDTO dto) {
-        return ResponseEntity.ok(classService.joinClass(dto.codigoAcesso()));
+    public ResponseEntity<String> entrarSala(@RequestBody JoinClassDTO dto) {
+        return ResponseEntity.ok(classService.entrarSala(dto.codigoAcesso()));
     }
 
     @GetMapping("/detalhes")

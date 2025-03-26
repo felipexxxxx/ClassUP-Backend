@@ -50,7 +50,7 @@ public class ClassService {
     private final EmailService emailService;
 
     @Transactional
-    public ClassEntity createClass(ClassEntity classEntity) {
+    public ClassEntity criarSala(ClassEntity classEntity) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
 
@@ -70,7 +70,7 @@ public class ClassService {
 }
 
     @Transactional
-    public String joinClass(String codigoDeEntrada) {
+    public String entrarSala(String codigoDeEntrada) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     User user = (User) auth.getPrincipal();
 
@@ -120,10 +120,7 @@ public class ClassService {
     }
 
     for (ClassEntity sala : salasAtivas) {
-        // Confirma que o professor ainda está vinculado
         if (sala.getProfessor() != null && sala.getProfessor().getId().equals(professor.getId())) {
-
-            // 1. Salva o professor no histórico (caso ainda não esteja)
             if (!salaHistoricoRepository.existsBySalaAndUsuarioAndRole(sala, professor, Role.PROFESSOR)) {
                 salaHistoricoRepository.save(ClassHistoryEntity.builder()
                         .usuario(professor)
@@ -133,7 +130,7 @@ public class ClassService {
                         .build());
             }
 
-            // 2. Salva os alunos no histórico e os desvincula da sala
+            // desvincula da sala
             List<User> alunos = userRepository.findBySalaAndRole(sala, Role.ALUNO);
             for (User aluno : alunos) {
                 if (!salaHistoricoRepository.existsBySalaAndUsuarioAndRole(sala, aluno, Role.ALUNO)) {
@@ -147,8 +144,6 @@ public class ClassService {
 
                 aluno.setSala(null);
                 
-
-                // 3. Envia e-mail ao aluno
                 String corpoEmail = """
                     Olá %s,
 
@@ -172,10 +167,10 @@ public class ClassService {
                 );
             }
 
-            // 4. Desvincula o professor da sala
+            
             sala.setProfessor(null);
             sala.setCodigoAcesso(CodigoAcessoUtil.gerarCodigoAcesso());
-            // 5. Salva atualizações no banco
+            
             userRepository.saveAll(alunos);
             classRepository.save(sala);
         }
@@ -185,7 +180,7 @@ public class ClassService {
 }
 
 
-public ClassHistoryDetalhesDTO buscarDetalhesHistorico(Long salaId) {
+public ClassHistoryDetalhesDTO verSalaHistorico(Long salaId) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     User usuarioLogado = (User) auth.getPrincipal();
 
@@ -198,20 +193,17 @@ public ClassHistoryDetalhesDTO buscarDetalhesHistorico(Long salaId) {
         throw new RuntimeException("Você não participou dessa sala.");
     }
 
-    // Professor
     User professor = salaHistoricoRepository.findBySala(sala).stream()
         .filter(h -> h.getRole() == Role.PROFESSOR)
         .map(ClassHistoryEntity::getUsuario)
         .findFirst()
         .orElse(null);
 
-    // Alunos
     List<SimpleUserDTO> alunos = salaHistoricoRepository.findBySala(sala).stream()
         .filter(h -> h.getRole() == Role.ALUNO)
         .map(h -> new SimpleUserDTO(h.getUsuario().getId(), h.getUsuario().getNomeCompleto(), h.getUsuario().getRole()))
         .toList();
 
-    // Atividades da sala (com status real do aluno logado)
     List<Activity> atividadesSala = activityRepository.findBySalaId(salaId);
     List<ActivityHistoryDTO> atividades = atividadesSala.stream()
         .map(a -> {
@@ -246,9 +238,6 @@ public ClassHistoryDetalhesDTO buscarDetalhesHistorico(Long salaId) {
     );
 }
 
-
-
-
     public List<ClassHistoryEntity> listarHistoricoUsuario() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
@@ -265,27 +254,23 @@ public String removerAlunoDaSala(Long alunoId) {
         throw new RuntimeException("Apenas professores podem remover alunos.");
     }
 
-    // Busca o aluno
     User aluno = userRepository.findById(alunoId)
         .orElseThrow(() -> new RuntimeException("Aluno não encontrado."));
 
-    // Valida se o aluno está em uma sala
+
     if (aluno.getSala() == null) {
         throw new RuntimeException("Este aluno não está em nenhuma sala.");
     }
 
-    // Verifica se o professor é o dono da sala
     if (!aluno.getSala().getProfessor().getId().equals(professor.getId())) {
         throw new RuntimeException("Você não é o professor responsável por esta sala.");
     }
 
     String nomeSala = aluno.getSala().getNome();
 
-    // Remove aluno da sala
     aluno.setSala(null);
     userRepository.save(aluno);
 
-    // Envia e-mail ao aluno
     String assunto = "Remoção da sala";
     String mensagem = """
         Olá %s,
@@ -319,7 +304,6 @@ public String removerAlunoDaSala(Long alunoId) {
         throw new RuntimeException("Você ainda não está vinculado a nenhuma sala.");
     }
 
-    // Busca todas as presenças do aluno com base na sala
     List<StudentActivityDTO> atividadesDTO = presenceRepository
         .findByUsuarioId(user.getId()).stream()
         .filter(p -> p.getAtividade().getSala().getId().equals(sala.getId()))
@@ -353,9 +337,6 @@ public String removerAlunoDaSala(Long alunoId) {
     );
 }
 
-    
-    
-
     public List<ClassDTO> getSalasDoProfessor() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     User professor = (User) auth.getPrincipal();
@@ -373,8 +354,7 @@ public String removerAlunoDaSala(Long alunoId) {
             .toList();
 }
 
-
-public GetClassDetalhadoProfessorDTO getDetalhesSalaPorId(Long salaId) {
+public GetClassDetalhadoProfessorDTO getSalaPorId(Long salaId) {
     ClassEntity sala = classRepository.findById(salaId)
         .orElseThrow(() -> new RuntimeException("Sala não encontrada"));
 

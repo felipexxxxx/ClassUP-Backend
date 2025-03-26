@@ -32,13 +32,13 @@ public class TeacherClassController {
     }
 
     @PostMapping
-    public ResponseEntity<ClassEntity> createClass(@RequestBody ClassEntity classEntity) {
-        return ResponseEntity.ok(classService.createClass(classEntity));
+    public ResponseEntity<ClassEntity> criarSala(@RequestBody ClassEntity classEntity) {
+        return ResponseEntity.ok(classService.criarSala(classEntity));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetClassDetalhadoProfessorDTO> getDetalhesPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(classService.getDetalhesSalaPorId(id));
+    public ResponseEntity<GetClassDetalhadoProfessorDTO> getSalasPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(classService.getSalaPorId(id));
     }
 
     @PostMapping("/encerrar")
@@ -64,8 +64,8 @@ public class TeacherClassController {
     }
 
     @PostMapping("/avisos")
-    public ResponseEntity<String> createNotice(@RequestBody NoticeDTO dto) {
-        return ResponseEntity.ok(noticeService.createNotice(dto));
+    public ResponseEntity<String> criarAviso(@RequestBody NoticeDTO dto) {
+        return ResponseEntity.ok(noticeService.criarAviso(dto));
     }
 
     @PutMapping("/avisos/{id}")
