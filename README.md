@@ -141,3 +141,10 @@ logging.level.org.springframework.security=DEBUG
 💡 Para envio de e-mails com Gmail, é necessário gerar uma senha de app em https://myaccount.google.com/security → seção “Senhas de app”.
 
 ⚠️ Certifique-se de que o banco classup_db exista no seu MySQL local antes de rodar o projeto.
+
+## 👨‍💻 Autor
+Desenvolvido por [Felipe de Paula](https://github.com/felipexxxxx)
+
+---
+
+💬 Dúvidas ou sugestões? Fique à vontade para abrir uma issue no repositório!
