@@ -16,7 +16,7 @@ SELECT * FROM (
         '1990-01-01' AS data_nascimento,
         'admin@classup.com' AS email,
         '00000000000' AS cpf,
-        '${ADMIN_PASSWORD}' AS senha,
+        ${ADMIN_PASSWORD} AS senha,
         'ADMIN' AS role,
         NOW() AS criado_em,
         NOW() AS modificado_em
