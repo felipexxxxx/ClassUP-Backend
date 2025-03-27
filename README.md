@@ -94,7 +94,9 @@ Clone o repositório e instale as dependências:
 ```bash
 mvn clean install
 ```
-```Execute o backend
+Execute o backend:
+
+```bash
 mvn spring-boot:run
 ```
 ## ⚙️ Configuração local (`application.properties`)
