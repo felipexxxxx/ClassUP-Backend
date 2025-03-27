@@ -39,6 +39,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/user").authenticated()    // Qualquer usuário autenticado pode ver
                 .requestMatchers(HttpMethod.POST, "/user/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/user/logout").authenticated()
+                .requestMatchers(HttpMethod.POST, "/user/enviar-email").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/user/redefinir-senha").permitAll()
                 .requestMatchers("/aluno/**").hasRole("ALUNO")
                 .requestMatchers("/professor/**").hasRole("PROFESSOR")
                 .requestMatchers("/sala/**").authenticated()

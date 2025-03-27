@@ -48,6 +48,10 @@ public class User {
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "sala_id")
-    private ClassEntity sala; }
+    private ClassEntity sala; 
 
+    @Column(name = "codigo_autenticacao")
+    private String codigoAutenticacao;
+
+}
 

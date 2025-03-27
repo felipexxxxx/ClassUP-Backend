@@ -7,7 +7,9 @@ CREATE TABLE users (
     cpf VARCHAR(14) UNIQUE NOT NULL,
     senha VARCHAR(255) NOT NULL,
     role ENUM('ALUNO', 'PROFESSOR', 'ADMIN') NOT NULL,
-    sala_id BIGINT, 
+    sala_id BIGINT,
+    
+    codigo_autenticacao VARCHAR(6) DEFAULT NULL, 
     
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modificado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

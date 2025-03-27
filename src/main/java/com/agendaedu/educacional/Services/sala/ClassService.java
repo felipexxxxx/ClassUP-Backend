@@ -383,7 +383,7 @@ public GetClassDetalhadoProfessorDTO getSalaPorId(Long salaId) {
 
     public class CodigoAcessoUtil {
         private static final String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        private static final int TAMANHO = 10;
+        private static final int TAMANHO = 6;
 
         public static String gerarCodigoAcesso() {
             Random random = new Random();

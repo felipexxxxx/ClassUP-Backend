@@ -42,7 +42,7 @@ public class UserController {
         }
 
         @PutMapping("/email")
-        public ResponseEntity<String> atualizarEmail(@RequestBody UpdateEmailDTO dto) {
+        public ResponseEntity<String> atualizarEmail(@RequestBody GetNovoEmailDTO dto) {
             return ResponseEntity.ok(userService.atualizarEmail(dto));
         }
 
@@ -51,14 +51,13 @@ public class UserController {
             return ResponseEntity.ok(userService.atualizarSenha(dto));
         }
         @PostMapping("/enviar-email")
-        public ResponseEntity<String> enviarCodigoAutenticacao(@RequestBody UpdateEmailDTO dto) {
-            userService.redefinirSenhaEmail(dto);  
-            return ResponseEntity.ok("E-mail enviado com sucesso.");
+        public ResponseEntity<String> enviarCodigoAutenticacao(@RequestBody SendOldEmailDTO dto) {
+            return userService.mandarEmail(dto); // sem ResponseEntity.ok()
         }
     
         @PutMapping("/redefinir-senha")
         public ResponseEntity<String> redefinirSenha(@RequestBody UpdatePasswordCodeDTO dto) {
-            userService.redefinirSenhaComCodigo(dto);  
-            return ResponseEntity.ok("Senha redefinida com sucesso.");
+            return userService.redefinirSenhaComCodigo(dto);
         }
+
    }
