@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -51,7 +52,7 @@ public class NoticeService {
         Notice aviso = Notice.builder()
             .titulo(dto.getTitulo())
             .mensagem(dto.getMensagem())
-            .enviadaEm(LocalDateTime.now())
+            .enviadaEm(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")))
             .sala(sala)
             .build();
     

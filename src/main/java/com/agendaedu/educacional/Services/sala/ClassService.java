@@ -21,6 +21,7 @@ import java.util.List;
 import org.springframework.security.core.Authentication;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Random;
 import java.util.UUID;
 import jakarta.transaction.Transactional;
@@ -117,7 +118,7 @@ public class ClassService {
                         .usuario(professor)
                         .sala(sala)
                         .role(Role.PROFESSOR)
-                        .dataEncerramento(LocalDateTime.now())
+                        .dataEncerramento(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")))
                         .build());
             }
 

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 @Service
@@ -80,7 +81,7 @@ public class UserService {
     // Cria uma sessão (vai p banco) 
     UserSession session = UserSession.builder()
         .user(user)
-        .entrou(LocalDateTime.now())
+        .entrou(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")))
         .build();
 
     sessionRepository.save(session);
