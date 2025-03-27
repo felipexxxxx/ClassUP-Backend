@@ -50,4 +50,15 @@ public class UserController {
         public ResponseEntity<String> atualizarSenha(@RequestBody UpdatePasswordDTO dto) {
             return ResponseEntity.ok(userService.atualizarSenha(dto));
         }
+        @PostMapping("/enviar-email")
+        public ResponseEntity<String> enviarCodigoAutenticacao(@RequestBody UpdateEmailDTO dto) {
+            userService.redefinirSenhaEmail(dto);  
+            return ResponseEntity.ok("E-mail enviado com sucesso.");
+        }
+    
+        @PutMapping("/redefinir-senha")
+        public ResponseEntity<String> redefinirSenha(@RequestBody UpdatePasswordCodeDTO dto) {
+            userService.redefinirSenhaComCodigo(dto);  
+            return ResponseEntity.ok("Senha redefinida com sucesso.");
+        }
    }

@@ -6,6 +6,7 @@ import com.agendaedu.educacional.Entities.usuario.*;
 import com.agendaedu.educacional.Exceptions.*;
 import com.agendaedu.educacional.Repositories.usuario.*;
 import com.agendaedu.educacional.Services.autenticacao.TokenService;
+import com.agendaedu.educacional.Services.sala.ClassService.CodigoAcessoUtil;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
@@ -27,6 +29,7 @@ public class UserService {
     private final SessionRepository sessionRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
+    private final EmailService emailService;
 
     public NewUserDTO registrar(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
@@ -130,5 +133,65 @@ public class UserService {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             return (User) auth.getPrincipal();
     }
+
+    public String redefinirSenhaEmail(UpdateEmailDTO dto) {
+    Optional<User> usuarioOptional = userRepository.findByEmail(dto.novoEmail());
+
+    if (usuarioOptional.isPresent()) {
+        User usuario = usuarioOptional.get();
+
+        String codigoAutenticacao = CodigoAcessoUtil.gerarCodigoAcesso();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm");
+        String dataAtual = LocalDateTime.now().format(formatter);
+
+        String emailBody = """
+                Olá %s,
+
+                Recebemos uma solicitação para redefinir sua senha no ClassUP.
+
+                Aqui está seu código de autenticação:
+
+                ➡️ **%s**
+
+                Este código é válido por tempo limitado. Use-o para redefinir sua senha no portal.
+
+                Solicitação feita em: %s
+
+                Se você não solicitou essa alteração, por favor, ignore este e-mail.
+
+                Atenciosamente,  
+                ClassUP
+                """.formatted(
+                    usuario.getNomeCompleto(),
+                    codigoAutenticacao,
+                    dataAtual
+        );
+
+        emailService.sendEmail(usuario.getEmail(), "Redefinição de Senha - ClassUP", emailBody);
+
+        return "Código de autenticação enviado para o e-mail.";
+    }
+
+    return "E-mail não encontrado.";
+}
+
+    public String redefinirSenhaComCodigo(UpdatePasswordCodeDTO dto) {
+    
+        User user = userRepository.findByEmail(dto.email()).get();
+                
+
+        // Valida o código de autenticação
+        if (!dto.codigoAutenticacao().equals(dto.codigoAutenticacao())) {
+            throw new RuntimeException("Código de autenticação inválido.");
+        }
+
+        // Atualiza a senha no banco de dados
+        user.setSenha(passwordEncoder.encode(dto.novaSenha()));
+        userRepository.save(user);
+
+        return "Senha redefinida com sucesso!";
+    }
+
 }
 
