@@ -50,7 +50,7 @@ B --> C[Frontend React consome JSON convertido]
 C --> D[Envia para endpoint Java]
 D --> E[Importa usuários + envia e-mails]
 ```
-🔗A API feita em Python que realiza a conversão dos arquivos em JSON padronizado está disponível neste repositório separado:
+🔗A API Python que realiza a conversão dos arquivos em JSON padronizado está disponível neste repositório separado:
 
 ➡️ [Conversor JSON](https://github.com/felipexxxxx/classup-python-converter)
 
