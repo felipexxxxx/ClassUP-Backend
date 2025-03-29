@@ -135,7 +135,6 @@ Execute o backend:
 mvn spring-boot:run
 ```
 
-Acesse o repositório do Frontend 
 ## ⚙️ Configuração local (`application.properties`)
 
 Para rodar o backend localmente, você pode substituir as variáveis de ambiente do `application.properties` por valores fixos. Exemplo:
