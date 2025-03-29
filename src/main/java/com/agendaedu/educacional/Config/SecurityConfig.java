@@ -35,8 +35,8 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(HttpMethod.POST, "/user").hasRole("ADMIN") // Somente admin pode criar
-                .requestMatchers(HttpMethod.GET, "/user").authenticated()    // Qualquer usuário autenticado pode ver
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/user").authenticated()    
                 .requestMatchers(HttpMethod.POST, "/user/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/user/logout").authenticated()
                 .requestMatchers(HttpMethod.POST, "/user/enviar-email").permitAll()

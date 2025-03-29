@@ -4,12 +4,10 @@ import lombok.RequiredArgsConstructor;
 
 import com.agendaedu.educacional.DTOs.autenticacao.*;
 import com.agendaedu.educacional.DTOs.usuario.*;
-import com.agendaedu.educacional.Entities.usuario.*;
 import com.agendaedu.educacional.Services.usuario.*;
 
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-
 
 @RestController
 @RequestMapping("/user")
@@ -18,13 +16,6 @@ public class UserController {
 
     private final UserService userService;
 
-       @PostMapping
-        public ResponseEntity<NewUserDTO> registrar(@RequestBody User user) {
-            NewUserDTO response = userService.registrar(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        }
-   
-       
        @PostMapping("/login")
        public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO dto) {
            return ResponseEntity.ok(userService.login(dto));
