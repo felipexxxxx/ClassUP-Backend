@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/54b6da94-5858-4060-8340-dcc6e06f92f8)# 🔧 ClassUP Backend API
+🔧 ClassUP Backend API
 
 Backend da aplicação ClassUP com Java Spring Boot.
 
@@ -50,6 +50,11 @@ B --> C[Frontend React consome JSON convertido]
 C --> D[Envia para endpoint Java]
 D --> E[Importa usuários + envia e-mails]
 ```
+🔗 O script Python que realiza a conversão dos arquivos em JSON padronizado está disponível neste repositório separado:
+
+➡️ [classup-python-converter](https://github.com/seu-usuario/classup-python-converter)
+
+Esse microserviço utiliza Flask e pode ser hospedado no Railway ou outro serviço de backend.
 
 ## 📡 Endpoints da API
 
