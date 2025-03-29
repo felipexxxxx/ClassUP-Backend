@@ -1,4 +1,4 @@
-# 🔧 ClassUP Backend API
+![image](https://github.com/user-attachments/assets/54b6da94-5858-4060-8340-dcc6e06f92f8)# 🔧 ClassUP Backend API
 
 Backend da aplicação ClassUP com Java Spring Boot.
 
@@ -27,13 +27,35 @@ Backend da aplicação ClassUP com Java Spring Boot.
 - spring-boot-starter-test
 - spring-security-test
 
+## 📦 Funcionalidade de Importação de Usuários
 
+O sistema possui um mecanismo de **importação automatizada de usuários** (alunos e professores) destinado exclusivamente ao administrador da aplicação.
+
+### 📌 Como funciona:
+
+- A instituição fornece os dados dos usuários em `.csv`, `.json`, `.sql` ou `.xlsx`
+- Um script Python (`converterArquivoAPI.py`) processa os arquivos e gera um JSON padronizado
+- Esse JSON é enviado para o endpoint `/admin/importar-usuarios`
+- O backend gera:
+  - Matrícula automática: `ALU12345` ou `PROF67890`
+  - Senha numérica de 8 dígitos (criptografada com **BCrypt**)
+  - Envio automático de e-mail com as credenciais de acesso
+
+### 🔄 Exemplo do fluxo:
+
+```mermaid
+graph TD
+A[Upload do arquivo .csv/.sql/.xlsx] --> B[Servidor Flask converte para JSON]
+B --> C[Frontend React consome JSON convertido]
+C --> D[Envia para endpoint Java]
+D --> E[Importa usuários + envia e-mails]
+```
 
 ## 📡 Endpoints da API
 
 ### 🔐 Autenticação (`/user`)
 | Método | Rota                     | Descrição                                 |
-|--------|--------------------------|-------------------------------------------||
+|--------|--------------------------|-------------------------------------------|
 | POST   | `/user/login`            | Login de usuário                          |
 | POST   | `/user/logout`           | Logout do sistema                         |
 | GET    | `/user`                  | Buscar perfil do usuário autenticado      |
@@ -91,24 +113,6 @@ Backend da aplicação ClassUP com Java Spring Boot.
 |--------|-----------------------------|--------------------------------------------------|
 | POST   | `/admin/registrar`          | Registrar manualmente um novo usuário (admin)    |
 | POST   | `/admin/importar-usuarios`  | Importar usuários via JSON processado (admin)    |
-
-## ⚙️ Funcionalidade de Importação de Usuários
-
-O sistema possui um mecanismo de **importação automatizada de usuários** (alunos e professores) destinado exclusivamente ao administrador da aplicação.
-
-### 📌 Como funciona:
-
-- A instituição fornece os dados dos usuários em `.csv`, `.json`, `.sql` ou `.xlsx`
-- Um script Python (`converterArquivoAPI.py`) processa os arquivos e gera um JSON padronizado
-- Esse JSON é enviado para o endpoint `/admin/importar-usuarios`
-- O backend gera:
-  - Matrícula automática: `ALU12345` ou `PROF67890`
-  - Senha numérica de 8 dígitos (criptografada com **BCrypt**)
-  - Envio automático de e-mail com as credenciais de acesso
-
-### 📧 Exemplo de e-mail enviado:
-
-
 
 
 ## 📦 Instalação
