@@ -1,4 +1,4 @@
-🔧 ClassUP Backend API
+## 🔧 ClassUP Backend API
 
 Backend da aplicação ClassUP com Java Spring Boot.
 
