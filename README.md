@@ -50,11 +50,13 @@ B --> C[Frontend React consome JSON convertido]
 C --> D[Envia para endpoint Java]
 D --> E[Importa usuários + envia e-mails]
 ```
-🔗 O script Python que realiza a conversão dos arquivos em JSON padronizado está disponível neste repositório separado:
+🔗A API feita em Python que realiza a conversão dos arquivos em JSON padronizado está disponível neste repositório separado:
 
-➡️ [classup-python-converter](https://github.com/felipexxxxx/classup-python-converter)
+➡️ [Conversor JSON](https://github.com/felipexxxxx/classup-python-converter)
 
-Esse microserviço utiliza Flask e pode ser hospedado no Railway ou outro serviço de backend.
+Esse microserviço Flask foi hospedada no Railway e utilizada em conjunto com o frontend.
+
+Acesse o repositório do Frontend [aqui.](https://github.com/felipexxxxx/AgendaEdu-Frontend)
 
 ## 📡 Endpoints da API
 
@@ -132,6 +134,8 @@ Execute o backend:
 ```bash
 mvn spring-boot:run
 ```
+
+Acesse o repositório do Frontend 
 ## ⚙️ Configuração local (`application.properties`)
 
 Para rodar o backend localmente, você pode substituir as variáveis de ambiente do `application.properties` por valores fixos. Exemplo:
