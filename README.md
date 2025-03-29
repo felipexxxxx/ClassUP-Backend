@@ -10,6 +10,7 @@ Backend da aplicação ClassUP com Java Spring Boot.
 - Spring Mail
 - Spring Data JPA
 - FlywayDB (migração de banco)
+- BCrypt (criptografia de senhas)
 - MySQL
 
 ## 🛠️ Dependências Maven principais
@@ -32,8 +33,7 @@ Backend da aplicação ClassUP com Java Spring Boot.
 
 ### 🔐 Autenticação (`/user`)
 | Método | Rota                     | Descrição                                 |
-|--------|--------------------------|-------------------------------------------|
-| POST   | `/user`                  | Registrar novo usuário                    |
+|--------|--------------------------|-------------------------------------------||
 | POST   | `/user/login`            | Login de usuário                          |
 | POST   | `/user/logout`           | Logout do sistema                         |
 | GET    | `/user`                  | Buscar perfil do usuário autenticado      |
@@ -85,6 +85,30 @@ Backend da aplicação ClassUP com Java Spring Boot.
 |--------|--------------------------|------------------------------------------|
 | GET    | `/sala/historico`        | Listar salas encerradas do usuário       |
 | GET    | `/sala/historico/{id}`   | Ver detalhes de uma sala encerrada       |
+
+### 👨‍💼 Administrador (`/admin`)
+| Método | Rota                        | Descrição                                        |
+|--------|-----------------------------|--------------------------------------------------|
+| POST   | `/admin/registrar`          | Registrar manualmente um novo usuário (admin)    |
+| POST   | `/admin/importar-usuarios`  | Importar usuários via JSON processado (admin)    |
+
+## ⚙️ Funcionalidade de Importação de Usuários
+
+O sistema possui um mecanismo de **importação automatizada de usuários** (alunos e professores) destinado exclusivamente ao administrador da aplicação.
+
+### 📌 Como funciona:
+
+- A instituição fornece os dados dos usuários em `.csv`, `.json`, `.sql` ou `.xlsx`
+- Um script Python (`converterArquivoAPI.py`) processa os arquivos e gera um JSON padronizado
+- Esse JSON é enviado para o endpoint `/admin/importar-usuarios`
+- O backend gera:
+  - Matrícula automática: `ALU12345` ou `PROF67890`
+  - Senha numérica de 8 dígitos (criptografada com **BCrypt**)
+  - Envio automático de e-mail com as credenciais de acesso
+
+### 📧 Exemplo de e-mail enviado:
+
+
 
 
 ## 📦 Instalação
