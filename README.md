@@ -52,7 +52,7 @@ D --> E[Importa usuários + envia e-mails]
 ```
 🔗 O script Python que realiza a conversão dos arquivos em JSON padronizado está disponível neste repositório separado:
 
-➡️ [classup-python-converter](https://github.com/seu-usuario/classup-python-converter)
+➡️ [classup-python-converter](https://github.com/felipexxxxx/classup-python-converter)
 
 Esse microserviço utiliza Flask e pode ser hospedado no Railway ou outro serviço de backend.
 
