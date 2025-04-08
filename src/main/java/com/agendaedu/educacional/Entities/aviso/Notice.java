@@ -28,7 +28,7 @@ public class Notice {
     private LocalDateTime enviadaEm; 
 
     @ManyToOne
-    @JoinColumn(name = "sala_id") 
+    @JoinColumn(name = "classroom_id") 
     @JsonIgnore 
     private ClassEntity sala;
 }
